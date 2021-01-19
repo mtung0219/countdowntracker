@@ -4,12 +4,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,20 +21,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 
 import java.util.List;
-import java.util.PriorityQueue;
+import java.util.TimeZone;
 
 import androidx.core.app.NotificationCompat;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -40,21 +38,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String EXTRA_MESSAGE
-            = "com.qi.helloworld.extra.MESSAGE";
+    public static final String EXTRA_MESSAGE = "com.qi.helloworld.extra.MESSAGE";
     // Unique tag for the intent reply
+
     public static final int TEXT_REQUEST = 1;
     private int mCount = 0;
-    private TextView mShowCount;
-
-    private ArrayList<CountdownObject> testList;
-
-    private PriorityQueue<CountdownObject> testPQ;
-    private String a,b,c;
     private RecyclerView mRecyclerView;
     private WordListAdapter mAdapter;
     private EventViewModel mEventViewModel;
     private List<Event> finalEvents;
+    private Context ctx;
 
     private NotificationManager mNotificationManager;
     private static final int NOTIFICATION_ID = 0;
@@ -65,18 +58,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //initiatePQ();
 
+        ctx = this;
         mRecyclerView = findViewById(R.id.recyclerview);
-        //mAdapter = new WordListAdapter(this, testList);
         mAdapter = new WordListAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mEventViewModel = ViewModelProviders.of(this).get(EventViewModel.class);
 
-        mEventViewModel.getAllEvents().observe(this, new Observer<List<Event>>() {
+        mEventViewModel.getCurrentEvents().observe(this, new Observer<List<Event>>() {
             @Override
             public void onChanged(@Nullable final List<Event> events) {
+                Log.d("asdf","current events has " + events.size() + " items");
                 // Update the cached copy of the words in the adapter.
                 finalEvents = events;
                 mAdapter.setEvents(events);
@@ -106,13 +99,27 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSwiped(RecyclerView.ViewHolder viewHolder,
                                          int direction) {
-                        int position = viewHolder.getAdapterPosition();
-                        Event myEvent = mAdapter.getEventAtPosition(position);
-                        Toast.makeText(MainActivity.this, "Deleting " +
-                                myEvent.getName(), Toast.LENGTH_LONG).show();
 
-                        // Delete the event
-                        mEventViewModel.deleteEvent(myEvent);
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setMessage("Are you sure you want to delete this event?")
+                                .setCancelable(false)
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+
+                                        int position = viewHolder.getAdapterPosition();
+                                        Event myEvent = mAdapter.getEventAtPosition(position);
+                                        Toast.makeText(MainActivity.this, "Deleting " +
+                                                myEvent.getName(), Toast.LENGTH_LONG).show();
+
+                                        // Delete the event
+                                        mEventViewModel.deleteEvent(myEvent);
+                                    }
+                                })
+                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        mAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
+                                    }
+                                }) .show();
                     }
                 });
 
@@ -151,9 +158,9 @@ public class MainActivity extends AppCompatActivity {
                                     + repeatInterval;
                             toastMessage = "Stand Up Alarm On!";
                             if (alarmManager != null) {
-                                alarmManager.setInexactRepeating
-                                        (AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                                                triggerTime, repeatInterval, notifyPendingIntent);
+                                alarmManager.set
+                                        (AlarmManager.RTC_WAKEUP,
+                                                getTestLocalDateLong(), notifyPendingIntent);
                             }
                         } else {
                             if (alarmManager != null) {
@@ -172,47 +179,42 @@ public class MainActivity extends AppCompatActivity {
 
     public void sendRefreshBroadcast(Context context) {
         Log.d("Loading","sending an updated broadcast...............");
-        String[] testStringArray = new String[3];
-        for (int i = 0; i < 3; i++) {
+        String[] testStringArray = new String[finalEvents.size()];
+        long[] testLongArray = new long[finalEvents.size()];
+        for (int i = 0; i < finalEvents.size(); i++) {
             testStringArray[i]=(finalEvents.get(i).getName());
+            testLongArray[i] = (finalEvents.get(i).getDateLong());
         }
         String teststring = finalEvents.get(0).getName();
-        //String teststring = "lolol";
-        Log.d("Loading","sending this teststring to widget: " + teststring);
 
-        int[] ids = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), CountdownTrackerWidget.class));
+        int[] ids = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(context, CountdownTrackerWidget.class));
 
         Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         intent.setComponent(new ComponentName(context, CountdownTrackerWidget.class));
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         intent.putExtra("doesthiswork",teststring);
         intent.putExtra("doesthisworkarray",testStringArray);
+        intent.putExtra("dateLongArray",testLongArray);
         context.sendBroadcast(intent);
     }
-    public void initiatePQ() {
-        testPQ = new PriorityQueue<>();
-        testList = new ArrayList<>();
 
-        testPQ.add(new CountdownObject("event five", getDate(2021,10,5)));
-        testPQ.add(new CountdownObject("event three", getDate(2021,5,20)));
-        testPQ.add(new CountdownObject("event one", getDate(2021,3,10)));
+    private long getTestLocalDateLong() {
+        Calendar c = Calendar.getInstance();
+        Date prelimDate = c.getTime();
 
-        testList.add(new CountdownObject("event five", getDate(2021,10,5)));
-        testList.add(new CountdownObject("event three", getDate(2021,5,20)));
-        testList.add(new CountdownObject("event one", getDate(2021,3,10)));
-        testList.add(new CountdownObject("event two", getDate(2021,4,10)));
-        testList.add(new CountdownObject("event four", getDate(2021,8,17)));
+        c.setTime(prelimDate);
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
 
-        Collections.sort(testList);
-
-        a = (testPQ.poll().get_name());
-        b = (testPQ.poll().get_name());
-        c = (testPQ.poll().get_name());
-
-        a = (testList.get(0).get_name());
-        b = (testList.get(1).get_name());
-        c = (testList.get(2).get_name());
-
+        c.set(Calendar.YEAR, year);
+        c.set(Calendar.MONTH, month);
+        c.set(Calendar.DAY_OF_MONTH, day);
+        c.set(Calendar.HOUR_OF_DAY,23);
+        c.set(Calendar.MINUTE, 28);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        return c.getTime().getTime();
     }
 
     @Override
@@ -227,6 +229,7 @@ public class MainActivity extends AppCompatActivity {
             int reply_day= data.getIntExtra(AddEventActivity.DAY_KEY,0);
             Log.d("ASDF","original reply ints are " + reply_year + " " + reply_month + " " + reply_day);
             Date date = getDate(reply_year, reply_month, reply_day);
+
 
             Event event = new Event(reply_event_name, date);
             Log.d("ASDF","original saved date is " + date.getTime());
@@ -293,41 +296,19 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void addToTestList(CountdownObject obj) {
-        testList.add(obj);
-
-        Collections.sort(testList);
-
-        Toast toast = Toast.makeText(this, "new event added",
-                Toast.LENGTH_SHORT);
-        toast.show();
-    }
-
-    public void removeToTestList(CountdownObject obj) {
-        testList.remove(obj);
-    }
-
-    public boolean existsInTestList(CountdownObject obj) {
-        return testList.contains(obj);
-    }
-
-
     public Date getDate(int year, int month, int day) {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, year);
         cal.set(Calendar.MONTH, month - 1);
         cal.set(Calendar.DAY_OF_MONTH, day);
+        cal.set(Calendar.HOUR_OF_DAY,23);
+        cal.set(Calendar.MINUTE,59);
+        cal.set(Calendar.SECOND,0);
+        cal.set(Calendar.MILLISECOND,0);
+
+        Log.d("ASDF","time set is " + cal.getTime().getTime());
         return cal.getTime();
     }
-
-
-    public void showToast(View view) {
-        String a1 = a + " " + b + " " + c;
-        Toast toast = Toast.makeText(this, a1,
-                Toast.LENGTH_SHORT);
-        toast.show();
-    }
-
 
     public void countUp(View view) {
         Intent intent = new Intent(this, AddEventActivity.class);
@@ -335,9 +316,7 @@ public class MainActivity extends AppCompatActivity {
         //intent.putExtra(EXTRA_MESSAGE, message);
         startActivityForResult(intent, TEXT_REQUEST);
 
-
         //Intent intent2 = new Intent(this, RoomWordsSample.class);
         //startActivity(intent2);
-
     }
 }

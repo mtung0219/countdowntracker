@@ -1,29 +1,62 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widgetLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/appWidgetBackgroundColor"
     android:padding="@dimen/widget_margin"
     android:theme="@style/ThemeOverlay.HelloWorld.AppWidgetContainer"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:configure="com.qi.MainActivity"
+    android:clickable="true"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:focusable="true">
 
     <TextView
         android:layout_width="match_parent"
         android:id="@+id/widgetTitleLabel"
-        android:text="Your Upcoming Events:"
-        android:textColor="@color/black"
+        android:text="Days Left Until:"
+        android:textColor="@color/white"
         android:background="@color/colorPrimary"
         android:textSize="18sp"
         android:gravity="center"
         android:textAllCaps="true"
-        android:layout_height="wrap_content"/>
+        android:clickable="false"
+        android:duplicateParentState="true"
+        android:layout_height="wrap_content"
+        android:focusable="true" />
 
     <ListView
         android:id="@+id/listview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:listitem="@layout/listview_item"
-        android:layout_below="@+id/widgetTitleLabel">
+        android:clickable="false"
+        android:focusable="true"
+        android:duplicateParentState="true"
+        android:layout_below="@+id/widgetTitleLabel"
+        android:layout_above="@+id/widgetLastUpdated">
     </ListView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:id="@+id/widgetLastUpdated"
+        android:text="Last updated xxx:xxx:xxx"
+        android:textColor="@color/black"
+        android:textSize="8sp"
+        android:gravity="center"
+        android:textAllCaps="false"
+        android:clickable="false"
+        android:duplicateParentState="true"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/widgetButton"
+        android:focusable="true" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Go To App"
+        android:id="@+id/widgetButton"
+        android:layout_alignParentBottom="true">
+    </Button>
+
 
 
 

@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.cardview.widget.CardView
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/recycler_cardview"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    card_view:cardCornerRadius="10dp"
+    card_view:cardElevation="10dp"
+    card_view:cardBackgroundColor="@color/white"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    android:background="@color/colorScreenBackground">
+    android:layout_margin="5dp">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp">
 
     <TextView
         android:id="@+id/word_textview"
@@ -15,7 +24,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        style="@style/text_view_style"
+        style="@style/text_view_style_main"
         tools:text="placeholder text" />
 
     <androidx.constraintlayout.widget.Guideline
@@ -25,19 +34,29 @@
         app:layout_constraintGuide_begin="100dp"
         android:orientation="vertical"/>
 
-    <androidx.constraintlayout.widget.Guideline
+    <!--<androidx.constraintlayout.widget.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/guideline1"
         app:layout_constraintGuide_end="100dp"
-        android:orientation="vertical"/>
+        android:orientation="vertical"/> -->
     <TextView
         android:id="@+id/daysleft_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/text_view_style"
-        app:layout_constraintStart_toEndOf="@+id/guideline1"
+        style="@style/text_view_style_main"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="3" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/word_textview"
+        android:background="@android:color/white"/>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

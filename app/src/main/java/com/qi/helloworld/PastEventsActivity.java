@@ -47,6 +47,7 @@ public class PastEventsActivity extends AppCompatActivity {
         mEventViewModel.getPastEvents().observe(this, new Observer<List<Event>>() {
             @Override
             public void onChanged(@Nullable final List<Event> events) {
+                Log.d("asdf","past events has " + events.size() + " items");
                 mAdapter.setEvents(events);
             }
         });

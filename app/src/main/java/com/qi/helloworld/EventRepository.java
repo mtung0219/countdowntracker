@@ -13,17 +13,19 @@ import java.util.List;
 public class EventRepository {private EventDao mEventDao;
     private LiveData<List<Event>> mAllEvents;
     private LiveData<List<Event>> mPastEvents;
+    private LiveData<List<Event>> mCurrentEvents;
 
     EventRepository(Application application) {
         EventRoomDatabase db = EventRoomDatabase.getDatabase(application);
+        Log.d("Loading", "string value of REAL db is " + String.valueOf(db));
         mEventDao = db.eventDao();
         //mAllEvents = mEventDao.getAllEvents();**********************************************
         Calendar c = Calendar.getInstance();
         long prelimDate = c.getTime().getTime();
-        Log.d("ASDF", " " + prelimDate);
         mAllEvents = mEventDao.getAllEvents();
         //mPastEvents = mEventDao.getPastEvents(prelimDate);
-        mPastEvents = mEventDao.getPastEvents();
+        mPastEvents = mEventDao.getPastEvents(getStartLocalDateLong());
+        mCurrentEvents = mEventDao.getCurrentEvents(getStartLocalDateLong());
     }
 
     LiveData<List<Event>> getAllEvents() {
@@ -31,6 +33,9 @@ public class EventRepository {private EventDao mEventDao;
     }
     LiveData<List<Event>> getPastEvents() {
         return mPastEvents;
+    }
+    LiveData<List<Event>> getCurrentEvents() {
+        return mCurrentEvents;
     }
 
     public void insert(Event event) {
@@ -44,7 +49,27 @@ public class EventRepository {private EventDao mEventDao;
         new deleteWordAsyncTask(mEventDao).execute(event);
     }
 
+    public long getStartLocalDateLong() {
+        Calendar c = Calendar.getInstance();
+        Date prelimDate = c.getTime();
 
+        c.setTime(prelimDate);
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        c.set(Calendar.YEAR, year);
+        c.set(Calendar.MONTH, month);
+        c.set(Calendar.DAY_OF_MONTH, day);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+
+        Log.d("asdf",c.getTime().getTime()+"");
+
+        return c.getTime().getTime();
+    }
 
 
     private static class insertAsyncTask extends AsyncTask<Event, Void, Void> {

@@ -23,12 +23,12 @@ public interface EventDao {
     @Query("SELECT * from event_table ORDER BY date ASC")
     LiveData<List<Event>> getAllEvents();
 
-    @Query("SELECT * from event_table WHERE date < (strftime('%s','now','start of day')*1000)  ORDER BY date ASC")
-    LiveData<List<Event>> getPastEvents();
-//    @Query("SELECT * from event_table WHERE date < :cmp ORDER BY date ASC")
+    @Query("SELECT * from event_table WHERE date < :cmp  ORDER BY date ASC")
+    LiveData<List<Event>> getPastEvents(long cmp);
+//  @Query("SELECT * from event_table WHERE date < (strftime('%s','now','start of day')*1000)  ORDER BY date ASC")
 
-    @Query("SELECT * from event_table  ORDER BY date ASC")
-    LiveData<List<Event>> getCurrentEvents();
+    @Query("SELECT * from event_table WHERE date >= :cmp ORDER BY date ASC")
+    LiveData<List<Event>> getCurrentEvents(long cmp);
 
     @Query("SELECT * from event_table LIMIT 1")
     Event[] getAnyEvent();

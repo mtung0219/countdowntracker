@@ -48,6 +48,10 @@ public class Event implements Comparable<Event>{
         return this.date;
     }
 
+    public long getDateLong() {
+        return this.date.getTime();
+    }
+
     @Ignore
     public int getDaysLeft() {
         Calendar now = Calendar.getInstance();

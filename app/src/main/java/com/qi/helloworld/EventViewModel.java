@@ -12,12 +12,14 @@ public class EventViewModel extends AndroidViewModel {
 
     private LiveData<List<Event>> mAllEvents;
     private LiveData<List<Event>> mPastEvents;
+    private LiveData<List<Event>> mCurrentEvents;
 
     public EventViewModel (Application application) {
         super(application);
         mRepository = new EventRepository(application);
         mAllEvents = mRepository.getAllEvents();
         mPastEvents = mRepository.getPastEvents();
+        mCurrentEvents = mRepository.getCurrentEvents();
     }
 
 
@@ -27,6 +29,10 @@ public class EventViewModel extends AndroidViewModel {
 
     LiveData<List<Event>> getPastEvents() {
         return mPastEvents;
+    }
+
+    LiveData<List<Event>> getCurrentEvents() {
+        return mCurrentEvents;
     }
 
     public void insert(Event event) {

@@ -2,7 +2,7 @@
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/light_blue_900</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
@@ -30,6 +30,10 @@
         <item name="android:layout_marginTop">16dp</item>
     </style>
 
+    <style name="transparentButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@color/transparent1</item>
+    </style>
+
     <!-- Colored button styles -->
     <style name="AppTheme.Button.Colored" parent="AppTheme.Button">
         <item name="android:textColor">@android:color/white</item>
@@ -39,11 +43,37 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">
-            @android:style/TextAppearance.Large</item>
-        <item name="android:background">@color/colorPrimaryLight</item>
-        <item name="android:layout_marginTop">8dp</item>
+            @android:style/TextAppearance.Small</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:layout_marginTop">3dp</item>
+        <item name="android:layout_marginBottom">3dp</item>
         <item name="android:layout_gravity">center</item>
-        <item name="android:padding">16dp</item>
-        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="text_view_style_main">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">
+            @android:style/TextAppearance.Large</item>
+        <item name="android:layout_marginTop">3dp</item>
+        <item name="android:layout_marginBottom">3dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="text_view_style_title">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">30sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:layout_marginTop">3dp</item>
+        <item name="android:layout_marginBottom">3dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:textColor">@color/light_blue_900</item>
     </style>
 </resources>
