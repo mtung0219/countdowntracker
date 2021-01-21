@@ -6,6 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".AddEventActivity">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/guideline_add_event"
+        app:layout_constraintGuide_percent="0.1"
+        android:orientation="horizontal"/>
+
     <TextView
         android:id="@+id/name_label"
         android:layout_width="wrap_content"
@@ -13,19 +20,18 @@
         android:layout_marginStart="24dp"
         android:layout_marginLeft="24dp"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:text="Event name:"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/guideline_add_event" />
 
     <EditText
         android:id="@+id/name_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:ems="10"
-        android:hint="enter name here"
+        android:ems="15"
+        android:hint="Enter name here"
         android:inputType="textPersonName"
         app:layout_constraintTop_toBottomOf="@+id/name_label"
         app:layout_constraintStart_toStartOf="@+id/name_label"
@@ -48,24 +54,35 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:onClick="showDatePicker"
         android:text="Pick date"
         app:layout_constraintStart_toStartOf="@+id/date_label"
-        app:layout_constraintTop_toBottomOf="@+id/date_label" />
+        app:layout_constraintTop_toBottomOf="@+id/date_label"
+        android:layout_marginRight="8dp" />
+
+    <TextView
+        android:id="@+id/date_display_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="mm/dd/yyyy"
+        android:textSize="18sp"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="@+id/pick_date_button"
+        app:layout_constraintTop_toBottomOf="@+id/pick_date_button"/>
 
     <Button
         android:id="@+id/finish_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
         android:onClick="AddToMasterList"
         android:text="Add event!"
-        app:layout_constraintStart_toStartOf="@+id/date_label"
-        app:layout_constraintTop_toBottomOf="@+id/pick_date_button" />
+        app:layout_constraintStart_toStartOf="@+id/date_display_text"
+        app:layout_constraintTop_toBottomOf="@+id/date_display_text"/>
 
 
 

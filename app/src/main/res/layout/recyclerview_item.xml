@@ -27,13 +27,6 @@
         style="@style/text_view_style_main"
         tools:text="placeholder text" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/guideline0"
-        app:layout_constraintGuide_begin="100dp"
-        android:orientation="vertical"/>
-
     <!--<androidx.constraintlayout.widget.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

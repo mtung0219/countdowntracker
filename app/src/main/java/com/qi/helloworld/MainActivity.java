@@ -13,29 +13,27 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.Toast;
-import android.widget.ToggleButton;
-
 import java.util.Calendar;
 import java.util.Date;
 
 import java.util.List;
-import java.util.TimeZone;
 
-import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.qi.helloworld.extra.MESSAGE";
@@ -50,42 +48,60 @@ public class MainActivity extends AppCompatActivity {
     private Context ctx;
 
     private NotificationManager mNotificationManager;
+    private AlarmManager alarmManager;
     private static final int NOTIFICATION_ID = 0;
     private static final String PRIMARY_CHANNEL_ID =
             "primary_notification_channel";
+    private static final String PREFERENCE_LAST_NOTIF_ID = "PREFERENCE_LAST_NOTIF_ID";
+    private static final String SHARED_PREFS_FILE = "SHARED_PREFS_FILE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         ctx = this;
+        mEventViewModel = ViewModelProviders.of(this).get(EventViewModel.class);
+
         mRecyclerView = findViewById(R.id.recyclerview);
         mAdapter = new WordListAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mEventViewModel = ViewModelProviders.of(this).get(EventViewModel.class);
-
+        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         mEventViewModel.getCurrentEvents().observe(this, new Observer<List<Event>>() {
             @Override
             public void onChanged(@Nullable final List<Event> events) {
-                Log.d("asdf","current events has " + events.size() + " items");
                 // Update the cached copy of the words in the adapter.
                 finalEvents = events;
                 mAdapter.setEvents(events);
 
+                // save the task list to preference
+                SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+
+                Gson gson = new Gson();
+                String jsonText = gson.toJson(finalEvents);
+                editor.putString("eventList", jsonText);
+                editor.apply();
+                Log.d("Loading", "event list set via gson");
+
+                /*try {
+                    FileOutputStream fileOutputStream = new FileOutputStream("Events.ser");
+                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+                    objectOutputStream.writeObject(finalEvents);
+                    objectOutputStream.close();
+                    fileOutputStream.close();
+                    Log.d("Loading", "event list serialized");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }*/
+
                 Context ctx = getApplicationContext();
-                AppWidgetManager mgr = AppWidgetManager.getInstance(ctx);
                 sendRefreshBroadcast(ctx);
             }
         });
 
-        //Context ctx = getApplicationContext();
-        //AppWidgetManager mgr = AppWidgetManager.getInstance(ctx);
-        //sendRefreshBroadcast(ctx);
-
-        // Add the functionality to swipe items in the
-        // recycler view to delete that item
+        // swipe recyclerview items to delete them
         ItemTouchHelper helper = new ItemTouchHelper(
                 new ItemTouchHelper.SimpleCallback(0,
                         ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -109,10 +125,19 @@ public class MainActivity extends AppCompatActivity {
                                         int position = viewHolder.getAdapterPosition();
                                         Event myEvent = mAdapter.getEventAtPosition(position);
                                         Toast.makeText(MainActivity.this, "Deleting " +
-                                                myEvent.getName(), Toast.LENGTH_LONG).show();
+                                                myEvent.getName(), Toast.LENGTH_SHORT).show();
 
-                                        // Delete the event
+                                        // Delete the event and notification
+                                        int deleteID = myEvent.getNotifID();
+                                        String deleteName = myEvent.getName();
                                         mEventViewModel.deleteEvent(myEvent);
+                                        Intent notifyIntent = new Intent(MainActivity.this, AlarmReceiver.class);
+                                        notifyIntent.putExtra("eventName", deleteName);
+                                        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                        notifyIntent.setAction(deleteID+"");
+                                        final PendingIntent alarmIntentCancel = PendingIntent.getBroadcast (
+                                                MainActivity.this, deleteID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                                        alarmManager.cancel(alarmIntentCancel);
                                     }
                                 })
                                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -124,59 +149,41 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         helper.attachToRecyclerView(mRecyclerView);
-
-        //*********************************notification stuff************************************
-
-        NotificationCompat.Builder asdf1 = new NotificationCompat.Builder(this, "asdf");
-
-
-
-        mNotificationManager = (NotificationManager)
-                getSystemService(NOTIFICATION_SERVICE);
-        ToggleButton alarmToggle = findViewById(R.id.alarmToggle);
-
-        Intent notifyIntent = new Intent(this, AlarmReceiver.class);
-
-        boolean alarmUp = (PendingIntent.getBroadcast(this, NOTIFICATION_ID,
-                notifyIntent, PendingIntent.FLAG_NO_CREATE) != null);
-        alarmToggle.setChecked(alarmUp);
-
-        final PendingIntent notifyPendingIntent = PendingIntent.getBroadcast
-                (this, NOTIFICATION_ID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        final AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmToggle.setOnCheckedChangeListener(
-                new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton compoundButton,
-                                                 boolean isChecked) {
-                        String toastMessage;
-                        if(isChecked){
-                            long repeatInterval = 1 * 10 * 1000;
-                            //long repeatInterval = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
-                            long triggerTime = SystemClock.elapsedRealtime()
-                                    + repeatInterval;
-                            toastMessage = "Stand Up Alarm On!";
-                            if (alarmManager != null) {
-                                alarmManager.set
-                                        (AlarmManager.RTC_WAKEUP,
-                                                getTestLocalDateLong(), notifyPendingIntent);
-                            }
-                        } else {
-                            if (alarmManager != null) {
-                                alarmManager.cancel(notifyPendingIntent);
-                            }
-                            mNotificationManager.cancelAll();
-                            toastMessage = "Stand Up Alarm Off!";
-                        }
-                        Toast.makeText(MainActivity.this, toastMessage,Toast.LENGTH_SHORT)
-                                .show();
-                    }
-                });
-
         createNotificationChannel();
     }
 
+    /**
+     * Schedule a notification when an event is created.
+     */
+    private void sendNotification(String eventName, Date d, int xId) {
+        Intent notifyIntent = new Intent(this, AlarmReceiver.class);
+        notifyIntent.putExtra("eventName", eventName);
+        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        notifyIntent.setAction(xId+"");
+        Log.d("asdf","adding this extra name : " + eventName + " with notif ID " + xId);
+        final PendingIntent notifyPendingIntent = PendingIntent.getBroadcast
+                (this, xId, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        if (alarmManager != null) {
+            alarmManager.set(AlarmManager.RTC_WAKEUP, d.getTime(), notifyPendingIntent);
+        }
+    }
+
+    /**
+     * Generates unique notification IDs to make sure intents are not reused.
+     */
+    private static int getNextNotifId(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        int id = sharedPreferences.getInt(PREFERENCE_LAST_NOTIF_ID, 0) + 1;
+        if (id == Integer.MAX_VALUE) { id = 0; }
+        sharedPreferences.edit().putInt(PREFERENCE_LAST_NOTIF_ID, id).apply();
+        return id;
+    }
+
+    /**
+     * Sends a broadcast to refresh the widget. Data sent via intent extras.
+     */
     public void sendRefreshBroadcast(Context context) {
         Log.d("Loading","sending an updated broadcast...............");
         String[] testStringArray = new String[finalEvents.size()];
@@ -198,6 +205,9 @@ public class MainActivity extends AppCompatActivity {
         context.sendBroadcast(intent);
     }
 
+    /**
+     * Sets a specific date for testing purposes.
+     */
     private long getTestLocalDateLong() {
         Calendar c = Calendar.getInstance();
         Date prelimDate = c.getTime();
@@ -210,17 +220,19 @@ public class MainActivity extends AppCompatActivity {
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, month);
         c.set(Calendar.DAY_OF_MONTH, day);
-        c.set(Calendar.HOUR_OF_DAY,23);
-        c.set(Calendar.MINUTE, 28);
+        c.set(Calendar.HOUR_OF_DAY,2);
+        c.set(Calendar.MINUTE, 7);
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MILLISECOND, 0);
         return c.getTime().getTime();
     }
 
+    /**
+     * When new event is logged by user, sends notifications and insert event into ViewModel.
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
 
         if (requestCode == TEXT_REQUEST && resultCode == RESULT_OK) {
             String reply_event_name = data.getStringExtra(AddEventActivity.EVENT_NAME_KEY);
@@ -229,19 +241,27 @@ public class MainActivity extends AppCompatActivity {
             int reply_day= data.getIntExtra(AddEventActivity.DAY_KEY,0);
             Log.d("ASDF","original reply ints are " + reply_year + " " + reply_month + " " + reply_day);
             Date date = getDate(reply_year, reply_month, reply_day);
+            int xId = getNextNotifId(this);
+            int xId2 = getNextNotifId(this);
 
-
-            Event event = new Event(reply_event_name, date);
+            Event event = new Event(reply_event_name, date,xId);
             Log.d("ASDF","original saved date is " + date.getTime());
             mEventViewModel.insert(event);
+
+            Date notifDate_oneBefore = getNotifDateOneDayLeft(reply_year, reply_month, reply_day);
+            Date notifDate_dayOf = getNotifDateDayOf(reply_year, reply_month, reply_day);
+
+            sendNotification(reply_event_name, notifDate_oneBefore,xId);
+            sendNotification(reply_event_name, notifDate_dayOf,xId2);
+
         } else {
-            Toast.makeText(
-                    getApplicationContext(),
-                    "Something went wrong.",
-                    Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), "Something went wrong.", Toast.LENGTH_LONG).show();
         }
     }
 
+    /**
+     * Creates notification channel for SDKs OREO and up.
+     */
     public void createNotificationChannel() {
 
         // Create a notification manager object.
@@ -268,8 +288,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
+    /**
+     * Inflates menu that goes to Past Events.
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -277,6 +298,9 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * On Click listener for Past Events item in menu.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -287,8 +311,6 @@ public class MainActivity extends AppCompatActivity {
                     Toast.LENGTH_SHORT).show();
 
             Intent intent = new Intent(this, PastEventsActivity.class);
-            //String message = mMessageEditText.getText().toString();
-            //intent.putExtra(EXTRA_MESSAGE, message);
             startActivity(intent);
             return true;
         }
@@ -296,6 +318,10 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Method used to set Date object for events. Time of day is set to 11:59pm system time
+     * so that "Days Left" will not incremented until the very end of the day.
+     */
     public Date getDate(int year, int month, int day) {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, year);
@@ -310,6 +336,45 @@ public class MainActivity extends AppCompatActivity {
         return cal.getTime();
     }
 
+    /**
+     * Gets date one day before event due at 7:30am, for notification purposes.
+     */
+    public Date getNotifDateOneDayLeft(int year, int month, int day) {
+        // notifies at 7:30am the day before
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month - 1);
+        cal.set(Calendar.DAY_OF_MONTH, day);
+        cal.set(Calendar.HOUR_OF_DAY,7);
+        cal.set(Calendar.MINUTE,30);
+        cal.set(Calendar.SECOND,0);
+        cal.set(Calendar.MILLISECOND,0);
+
+        cal.add(Calendar.DAY_OF_YEAR, -1);
+
+        return cal.getTime();
+    }
+
+    /**
+     * Gets date day of event at 7:00am, for notification purposes.
+     */
+    public Date getNotifDateDayOf(int year, int month, int day) {
+        // notifies at 7am day of
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month - 1);
+        cal.set(Calendar.DAY_OF_MONTH, day);
+        cal.set(Calendar.HOUR_OF_DAY,7);
+        cal.set(Calendar.MINUTE,0);
+        cal.set(Calendar.SECOND,0);
+        cal.set(Calendar.MILLISECOND,0);
+
+        return cal.getTime();
+    }
+
+    /**
+     * Go to Add Event page.
+     */
     public void countUp(View view) {
         Intent intent = new Intent(this, AddEventActivity.class);
         //String message = mMessageEditText.getText().toString();

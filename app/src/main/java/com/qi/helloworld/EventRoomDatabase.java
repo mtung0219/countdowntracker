@@ -14,7 +14,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-@Database(entities = {Event.class}, version = 2, exportSchema = false)
+@Database(entities = {Event.class}, version = 3, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class EventRoomDatabase extends RoomDatabase {
 
@@ -55,7 +55,6 @@ public abstract class EventRoomDatabase extends RoomDatabase {
     private static class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
 
         private final EventDao mDao;
-        CountdownObject[] words = {};
         String[] eventNames = {"event five", "event three", "event one"};
         Date d1 = getDate(2021,10,5);
         Date d2 = getDate(2021,5,5);
@@ -69,12 +68,13 @@ public abstract class EventRoomDatabase extends RoomDatabase {
         @Override
         protected Void doInBackground(final Void... params) {
             // If we have no words, then create the initial list of words
-            if (mDao.getAnyEvent().length < 1) {
+            // ***** don't enable this
+            /*if (mDao.getAnyEvent().length < 1) {
                 for (int i = 0; i <= eventNames.length - 1; i++) {
-                    Event event = new Event(eventNames[i], eventDates[i]);
+                    Event event = new Event(eventNames[i], eventDates[i], 0);
                     mDao.insert(event);
                 }
-            }
+            }*/
             return null;
         }
 

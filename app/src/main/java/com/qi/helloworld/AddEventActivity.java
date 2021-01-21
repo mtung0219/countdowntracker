@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Calendar;
@@ -16,8 +17,6 @@ import java.util.Date;
 
 public class AddEventActivity extends AppCompatActivity {
 
-    public static final String EXTRA_REPLY =
-            "com.example.android.twoactivities.extra.REPLY";
     public static final String EVENT_NAME_KEY = "event name";
     public static final String YEAR_KEY = "year";
     public static final String MONTH_KEY = "month";
@@ -28,19 +27,30 @@ public class AddEventActivity extends AppCompatActivity {
     private int day = -1;
     private String eventName;
 
+    private TextView dateDisplay;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_event);
+
+        dateDisplay = findViewById(R.id.date_display_text);
+        dateDisplay.setVisibility(View.INVISIBLE);
     }
 
 
+    /**
+     * Opens the Calendar fragment.
+     */
     public void showDatePicker(View view) {
         DialogFragment newFragment = new DatePickerFragment();
         newFragment.show(getSupportFragmentManager(),"datePicker");
     }
 
+    /**
+     * Checks validity of date picked, and stores it to input into Event later.
+     */
     public void processDatePickerResult(int year, int month, int day) {
         String month_string = Integer.toString(month + 1);
         String day_string = Integer.toString(day);
@@ -60,12 +70,18 @@ public class AddEventActivity extends AppCompatActivity {
             this.year = -1;
             this.month = -1;
             this.day = -1;
+            dateDisplay.setVisibility(View.INVISIBLE);
         } else {
+            dateDisplay.setText(dateMessage);
+            dateDisplay.setVisibility(View.VISIBLE);
             Toast.makeText(this, dateMessage,
                     Toast.LENGTH_SHORT).show();
         }
     }
 
+    /**
+     * Gets Date object corresponding to given year, month, day.
+     */
     public Date getDate(int year, int month, int day) {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, year);
@@ -73,6 +89,10 @@ public class AddEventActivity extends AppCompatActivity {
         cal.set(Calendar.DAY_OF_MONTH, day);
         return cal.getTime();
     }
+
+    /**
+     * Gets number of days left between now and date d.
+     */
     public int getDaysLeft(Date d) {
         Calendar now = Calendar.getInstance();
         Calendar later = Calendar.getInstance();
@@ -82,6 +102,9 @@ public class AddEventActivity extends AppCompatActivity {
         return daysBetween(now, later);
     }
 
+    /**
+     * Returns current system time as a Date.
+     */
     public Date getNow() {
         Calendar c = Calendar.getInstance();
         Date prelimDate = c.getTime();
@@ -98,12 +121,15 @@ public class AddEventActivity extends AppCompatActivity {
         return c.getTime();
     }
 
+    /**
+     * Returns the number of days between two calendar objects.
+     */
     private static int daysBetween(Calendar now, Calendar later){
         // credit to John Leehey from stackOverflow
         Calendar dayOne = (Calendar) now.clone(),
                 dayTwo = (Calendar) later.clone();
         boolean flipResult;
-        Log.d("ASDF2","finding days between " + dayOne.getTime().getTime() + " and " +  dayTwo.getTime().getTime());
+        //Log.d("ASDF2","finding days between " + dayOne.getTime().getTime() + " and " +  dayTwo.getTime().getTime());
 
         if (dayOne.get(Calendar.YEAR) == dayTwo.get(Calendar.YEAR)) {
             //return Math.abs(dayOne.get(Calendar.DAY_OF_YEAR) - dayTwo.get(Calendar.DAY_OF_YEAR));
@@ -132,9 +158,12 @@ public class AddEventActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Returns to MainActivity.
+     */
     public void AddToMasterList(View view) {
         // Get the reply message from the edit text.
-        EditText eT = (EditText) findViewById(R.id.name_text);
+        EditText eT = findViewById(R.id.name_text);
         eventName = eT.getText().toString();
 
         if (!everythingValid()) {
@@ -153,8 +182,10 @@ public class AddEventActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Check if both date and event name are valid / non-empty.
+     */
     private boolean everythingValid() {
-        if (this.year < 0 || this.month < 0 || this.day < 0 || eventName.equals("")) return false;
-        return true;
+        return this.year >= 0 && this.month >= 0 && this.day >= 0 && !eventName.equals("");
     }
 }

@@ -1,22 +1,11 @@
 package com.qi.helloworld;
 
-import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Binder;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
-
-import androidx.annotation.Nullable;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.room.Ignore;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -24,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 public class CountdownTrackerWidgetRemoveViewsFactory implements RemoteViewsService.RemoteViewsFactory {
-    private Context mContext = null;
+    private Context mContext;
     private int appWidgetId;
     private List<String> widgetList;
     private String doesthiswork;
@@ -39,7 +28,7 @@ public class CountdownTrackerWidgetRemoveViewsFactory implements RemoteViewsServ
         this.widgetList.add("asdf3");
     }
     public CountdownTrackerWidgetRemoveViewsFactory(Context applicationContext, Intent intent) {
-        Log.d("Loading","REMOTE VIEWS FACTORY INTENTS LOOKED AT");
+        Log.d("Loading","REMOTE VIEWS FACTORY constructor called");
         mContext = applicationContext;
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
@@ -55,12 +44,13 @@ public class CountdownTrackerWidgetRemoveViewsFactory implements RemoteViewsServ
     @Override
     public void onDataSetChanged() {
         Log.d("Loading","ON DATA SET CHANGE CALLED");
+
         updateWidgetListView();
 
-        //EventRoomDatabase db = EventRoomDatabase.getDatabase(mContext.getApplicationContext());
-        //EventDao mEventDao = db.eventDao();
-        //LiveData<List<Event>> mCurrentEvents = mEventDao.getCurrentEvents();
-        //EventsFromRoom = mCurrentEvents.getValue();
+        EventRoomDatabase db = EventRoomDatabase.getDatabase(mContext.getApplicationContext());
+        EventDao mEventDao = db.eventDao();
+
+
         //Log.d("Loading", "string value of db is " + String.valueOf(EventsFromRoom));
     }
 
@@ -77,12 +67,13 @@ public class CountdownTrackerWidgetRemoveViewsFactory implements RemoteViewsServ
 
     @Override
     public RemoteViews getViewAt(int position) {
+        Log.d("Loading", "getting remoteView at position " + position);
 
         RemoteViews remoteView = new RemoteViews(mContext.getPackageName(),
                 R.layout.listview_item);
 
-        Log.d("Loading", "test string is now: " + doesthiswork);
-        if (doesthisworkarray != null) remoteView.setTextViewText(R.id.word_textview_listver, doesthisworkarray[position]);
+        if (doesthisworkarray != null)
+            remoteView.setTextViewText(R.id.word_textview_listver, doesthisworkarray[position]);
 
         String daysLeft;
         Date d = new Date( datelongarray[position]);
@@ -137,7 +128,7 @@ public class CountdownTrackerWidgetRemoveViewsFactory implements RemoteViewsServ
         return c.getTime();
     }
 
-    @Ignore
+
     private static int daysBetween(Calendar now, Calendar later){
         // credit to John Leehey from stackOverflow
         Calendar dayOne = (Calendar) now.clone(),
@@ -171,4 +162,5 @@ public class CountdownTrackerWidgetRemoveViewsFactory implements RemoteViewsServ
             else return extraDays - dayTwo.get(Calendar.DAY_OF_YEAR) + dayOneOriginalYearDays ;
         }
     }
+
 }

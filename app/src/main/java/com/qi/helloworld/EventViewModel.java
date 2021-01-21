@@ -7,6 +7,9 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
+/**
+ * ViewModel for Event Repository.
+ */
 public class EventViewModel extends AndroidViewModel {
     private EventRepository mRepository;
 

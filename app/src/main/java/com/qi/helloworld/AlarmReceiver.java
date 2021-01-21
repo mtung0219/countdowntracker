@@ -2,10 +2,13 @@ package com.qi.helloworld;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
 
@@ -16,33 +19,48 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     private NotificationManager mNotificationManager;
     private static final int NOTIFICATION_ID = 0;
+    private String eventName;
+    private static final String PREFERENCE_LAST_NOTIF_ID_1 = "PREFERENCE_LAST_NOTIF_ID_1";
 
     // Notification channel ID.
     private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
     @Override
     public void onReceive(Context context, Intent intent) {
+
+        Log.d("notif","alarm receiver called");
+        if (intent.getAction().equals("updateWidget")) {
+            ComponentName thisWidget = new ComponentName(context, CountdownTrackerWidget.class);
+            AppWidgetManager manager = AppWidgetManager.getInstance(context);
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.countdown_tracker_widget);
+            manager.updateAppWidget(thisWidget, views);
+
+            return;
+        }
+
         mNotificationManager = (NotificationManager)
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
-        deliverNotification(context);
+        Log.d("notif","getting this extra name : " + eventName);
+        eventName = intent.getStringExtra("eventName");
+        int notifyId = Integer.parseInt(intent.getAction());
+        deliverNotification(context, notifyId);
     }
 
-    private void deliverNotification(Context context) {
+    private void deliverNotification(Context context, int notifyId) {
         Intent contentIntent = new Intent(context, MainActivity.class);
         PendingIntent contentPendingIntent = PendingIntent.getActivity
-                (context, NOTIFICATION_ID, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                (context, notifyId, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, PRIMARY_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_background)
-                .setWhen(getStartLocalDateLong())
+                //.setWhen(getStartLocalDateLong())
                 .setContentTitle("Countdown Tracker")
-                .setContentText("Event coming up in one day!")
+                .setContentText(eventName + " coming up in one day!")
                 .setContentIntent(contentPendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
                 .setDefaults(NotificationCompat.DEFAULT_ALL);
 
-        mNotificationManager.notify(NOTIFICATION_ID, builder.build());
-        Log.d("asdf","NOTIFICATION SET FOR 11:28PM!!??");
+        mNotificationManager.notify(notifyId, builder.build());
     }
 
     private long getStartLocalDateLong() {
@@ -57,8 +75,8 @@ public class AlarmReceiver extends BroadcastReceiver {
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, month);
         c.set(Calendar.DAY_OF_MONTH, day);
-        c.set(Calendar.HOUR_OF_DAY,23);
-        c.set(Calendar.MINUTE, 28);
+        c.set(Calendar.HOUR_OF_DAY,1);
+        c.set(Calendar.MINUTE, 43);
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MILLISECOND, 0);
         return c.getTime().getTime();

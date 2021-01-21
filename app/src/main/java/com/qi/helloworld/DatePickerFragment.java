@@ -11,7 +11,9 @@ import android.widget.DatePicker;
 
 import java.util.Calendar;
 
-
+/**
+ * Calendar fragment used to set event date.
+ */
 public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener{
 
     @NonNull
@@ -32,6 +34,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         // Set the activity to the AddEventActivity Activity.
         AddEventActivity activity = (AddEventActivity) getActivity();
         // Invoke Main Activity's processDatePickerResult() method.
+        assert activity != null;
         activity.processDatePickerResult(year, month, day);
     }
 }

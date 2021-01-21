@@ -8,11 +8,12 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
-@Entity(tableName = "event_table")//, primaryKeys = {"event","date"})
-public class Event implements Comparable<Event>{
+@Entity(tableName = "event_table")
+public class Event implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     //@ColumnInfo(name = "id")
@@ -26,9 +27,13 @@ public class Event implements Comparable<Event>{
     @ColumnInfo(name = "date")
     private Date date;
 
-    public Event(@NonNull String name, Date date) {
+    @ColumnInfo(name = "notifID")
+    private int notifID;
+
+    public Event(@NonNull String name, Date date, int notifID) {
         this.name = name;
         this.date = date;
+        this.notifID = notifID;
     }
 
     @NonNull
@@ -51,6 +56,10 @@ public class Event implements Comparable<Event>{
     public long getDateLong() {
         return this.date.getTime();
     }
+
+    public int getNotifID() { return this.notifID; }
+
+    public void setNotifId(int notifID) { this.notifID = notifID; }
 
     @Ignore
     public int getDaysLeft() {
@@ -160,7 +169,7 @@ public class Event implements Comparable<Event>{
                 "/" + year_string);
     }
 
-    @Override
+    /*@Override
     public int compareTo(Event otherEvent) {
         if (otherEvent.getDate().after(this.getDate())) {
             return -1;
@@ -169,7 +178,7 @@ public class Event implements Comparable<Event>{
         } else {
             return 1;
         }
-    }
+    }*/
 
 
 }

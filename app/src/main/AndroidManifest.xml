@@ -9,12 +9,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HelloWorld">
+        <activity android:name=".configureWidget"></activity>
+
         <receiver android:name=".CountdownTrackerWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="android.intent.action.DATE_CHANGED"/>
-                <action android:name="android.intent.action.TIME_SET"/>
-
+                <action android:name="android.intent.action.DATE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
                 <action android:name="com.qi.helloworld.WIDGET_BUTTON" />
             </intent-filter>
 
@@ -29,21 +30,17 @@
             android:process=":remote" />
 
         <service
-            android:name="com.qi.helloworld.CountdownTrackerWidgetRemoteViewsService"
+            android:name=".CountdownTrackerWidgetRemoteViewsService"
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <activity android:name=".PastEventsActivity" />
-        <activity android:name=".hellosharedprefsActivity" />
         <activity android:name=".AddEventActivity" />
-        <activity android:name=".RecyclerViewMain" />
-        <activity android:name=".TwoActivities_second" />
-        <activity android:name=".TwoActivities_main" />
-        <activity android:name=".scrollingActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

@@ -10,6 +10,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Offers convenient methods to access and modify eventDao data.
+ * Shields ViewModel from database changes.
+ */
 public class EventRepository {private EventDao mEventDao;
     private LiveData<List<Event>> mAllEvents;
     private LiveData<List<Event>> mPastEvents;
@@ -17,13 +21,10 @@ public class EventRepository {private EventDao mEventDao;
 
     EventRepository(Application application) {
         EventRoomDatabase db = EventRoomDatabase.getDatabase(application);
-        Log.d("Loading", "string value of REAL db is " + String.valueOf(db));
         mEventDao = db.eventDao();
-        //mAllEvents = mEventDao.getAllEvents();**********************************************
         Calendar c = Calendar.getInstance();
         long prelimDate = c.getTime().getTime();
         mAllEvents = mEventDao.getAllEvents();
-        //mPastEvents = mEventDao.getPastEvents(prelimDate);
         mPastEvents = mEventDao.getPastEvents(getStartLocalDateLong());
         mCurrentEvents = mEventDao.getCurrentEvents(getStartLocalDateLong());
     }
@@ -49,6 +50,9 @@ public class EventRepository {private EventDao mEventDao;
         new deleteWordAsyncTask(mEventDao).execute(event);
     }
 
+    /**
+     * Returns start of current day to use as comparison cutoff for events' Days Left.
+     */
     public long getStartLocalDateLong() {
         Calendar c = Calendar.getInstance();
         Date prelimDate = c.getTime();

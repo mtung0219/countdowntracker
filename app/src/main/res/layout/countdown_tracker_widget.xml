@@ -5,7 +5,6 @@
     android:background="?attr/appWidgetBackgroundColor"
     android:padding="@dimen/widget_margin"
     android:theme="@style/ThemeOverlay.HelloWorld.AppWidgetContainer"
-    android:configure="com.qi.MainActivity"
     android:clickable="true"
     xmlns:tools="http://schemas.android.com/tools"
     android:focusable="true">
@@ -17,11 +16,11 @@
         android:textColor="@color/white"
         android:background="@color/colorPrimary"
         android:textSize="18sp"
-        android:gravity="center"
         android:textAllCaps="true"
         android:clickable="false"
         android:duplicateParentState="true"
         android:layout_height="wrap_content"
+        android:padding="3dp"
         android:focusable="true" />
 
     <ListView
@@ -39,7 +38,7 @@
     <TextView
         android:layout_width="match_parent"
         android:id="@+id/widgetLastUpdated"
-        android:text="Last updated xxx:xxx:xxx"
+        android:text="Problem updating. Go to app to manually update."
         android:textColor="@color/black"
         android:textSize="8sp"
         android:gravity="center"

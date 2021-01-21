@@ -8,21 +8,19 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.PriorityQueue;
 
+/**
+ * Similar to MainActivity, except returns query for all Past Events.
+ * User can still swipe left or right to delete.
+ */
 public class PastEventsActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE
             = "com.qi.helloworld.extra.MESSAGE";
@@ -47,7 +45,6 @@ public class PastEventsActivity extends AppCompatActivity {
         mEventViewModel.getPastEvents().observe(this, new Observer<List<Event>>() {
             @Override
             public void onChanged(@Nullable final List<Event> events) {
-                Log.d("asdf","past events has " + events.size() + " items");
                 mAdapter.setEvents(events);
             }
         });
@@ -78,30 +75,6 @@ public class PastEventsActivity extends AppCompatActivity {
                 });
 
         helper.attachToRecyclerView(mRecyclerView);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-
-        if (requestCode == TEXT_REQUEST && resultCode == RESULT_OK) {
-            String reply_event_name = data.getStringExtra(AddEventActivity.EVENT_NAME_KEY);
-            int reply_year= data.getIntExtra(AddEventActivity.YEAR_KEY,0);
-            int reply_month= data.getIntExtra(AddEventActivity.MONTH_KEY,0);
-            int reply_day= data.getIntExtra(AddEventActivity.DAY_KEY,0);
-            Log.d("ASDF","original reply ints are " + reply_year + " " + reply_month + " " + reply_day);
-            Date date = getDate(reply_year, reply_month, reply_day);
-
-            Event event = new Event(reply_event_name, date);
-            Log.d("ASDF","original saved date is " + date.getTime());
-            mEventViewModel.insert(event);
-        } else {
-            Toast.makeText(
-                    getApplicationContext(),
-                    "Something went wrong.",
-                    Toast.LENGTH_LONG).show();
-        }
     }
 
     @Override

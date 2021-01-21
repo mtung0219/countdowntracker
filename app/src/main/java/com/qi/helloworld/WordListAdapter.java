@@ -12,7 +12,9 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
-
+/**
+ * Adapter used for both MainActivity and Past Events views.
+ */
 public class WordListAdapter extends
         RecyclerView.Adapter<WordListAdapter.WordViewHolder> {
 
