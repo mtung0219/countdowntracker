@@ -72,6 +72,17 @@ public class Event implements Serializable {
     }
 
     @Ignore
+    public int[] getYearsMonthsDaysLeft() {
+        Calendar now = Calendar.getInstance();
+        Calendar later = Calendar.getInstance();
+        //now.setTimeInMillis(getNowInMillis());
+        now.setTime(getNow());
+        later.setTime(this.date);
+        return timeBetween(now, later);
+    }
+
+
+    @Ignore
     private Calendar calFix(Calendar c, Date d) {
         c.setTime(d);
         int year = c.get(Calendar.YEAR);
@@ -118,6 +129,76 @@ public class Event implements Serializable {
         return c.getTime();
     }
 
+
+    private static int[] timeBetween(Calendar now, Calendar later) {
+        Calendar dayOne = (Calendar) now.clone(),
+                dayTwo = (Calendar) later.clone();
+
+        if (dayTwo.getTime().getTime() > dayOne.getTime().getTime()) {
+            //swap them, dayOne is always the later one
+            Calendar temp = dayOne;
+            dayOne = dayTwo;
+            dayTwo = temp;
+        }
+        int yearsBetween = 0;
+        int monthsBetween = 0;
+        int daysBetween = 0;
+        int hoursBetween = 0;
+        int minutesBetween = 0;
+
+        while (dayOne.getTime().getTime() > dayTwo.getTime().getTime()) {
+            yearsBetween += 1;
+            dayOne.add(Calendar.YEAR, -1);
+        }
+
+        if (dayOne.getTime().getTime() < dayTwo.getTime().getTime()) {
+            yearsBetween -= 1;
+            dayOne.add(Calendar.YEAR, 1);
+        }
+
+        while (dayOne.getTime().getTime() > dayTwo.getTime().getTime()) {
+            monthsBetween += 1;
+            dayOne.add(Calendar.MONTH, -1);
+        }
+
+        if (dayOne.getTime().getTime() < dayTwo.getTime().getTime()) {
+            monthsBetween -= 1;
+            dayOne.add(Calendar.MONTH, 1);
+        }
+
+        while (dayOne.getTime().getTime() > dayTwo.getTime().getTime()) {
+            daysBetween += 1;
+            dayOne.add(Calendar.MILLISECOND, -1 * 1000 * 60 * 60 * 24);
+        }
+
+        if (dayOne.getTime().getTime() < dayTwo.getTime().getTime()) {
+            daysBetween -= 1;
+            dayOne.add(Calendar.MILLISECOND, 1000 * 60 * 60 * 24);
+        }
+
+        while (dayOne.getTime().getTime() > dayTwo.getTime().getTime()) {
+            hoursBetween += 1;
+            dayOne.add(Calendar.MILLISECOND, -1 * 1000 * 60 * 60);
+        }
+
+        if (dayOne.getTime().getTime() < dayTwo.getTime().getTime()) {
+            hoursBetween -= 1;
+            dayOne.add(Calendar.MILLISECOND, 1000 * 60 * 60);
+        }
+
+        while (dayOne.getTime().getTime() > dayTwo.getTime().getTime()) {
+            minutesBetween += 1;
+            dayOne.add(Calendar.MILLISECOND, -1 * 1000 * 60);
+        }
+
+        if (dayOne.getTime().getTime() < dayTwo.getTime().getTime()) {
+            minutesBetween -= 1;
+            dayOne.add(Calendar.MILLISECOND, 1000 * 60);
+        }
+
+        return new int[]{yearsBetween, monthsBetween, daysBetween, hoursBetween, minutesBetween};
+
+    }
     @Ignore
     private static int daysBetween(Calendar now, Calendar later){
         // credit to John Leehey from stackOverflow

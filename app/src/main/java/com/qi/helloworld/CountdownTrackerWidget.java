@@ -228,6 +228,7 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+        int millisInDay = 86400000;
         Calendar now = Calendar.getInstance();
         Date dateNow = now.getTime();
 
@@ -245,9 +246,10 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
         // For API 19 and later, set may fire the intent a little later to save battery,
         // setExact ensures the intent goes off exactly at midnight.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, midnight.getTimeInMillis(),60000, pendingIntent);
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, midnight.getTimeInMillis(),millisInDay, pendingIntent);
         } else {
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, dateNow.getTime() + 60000, pendingIntent);
+            //alarmManager.setExact(AlarmManager.RTC_WAKEUP, midnight.getTimeInMillis(), pendingIntent);
         }
         Log.d("Loading", "next widget update scheduled");
     }

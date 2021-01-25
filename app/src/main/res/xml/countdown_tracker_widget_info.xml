@@ -6,7 +6,7 @@
     android:minHeight="110dp"
     android:previewImage="@drawable/example_appwidget_preview"
     android:resizeMode="horizontal|vertical"
-    android:updatePeriodMillis="1800000"
+    android:updatePeriodMillis="0"
     android:configure="com.qi.helloworld.configureWidget"
     android:widgetCategory="home_screen|keyguard">
 

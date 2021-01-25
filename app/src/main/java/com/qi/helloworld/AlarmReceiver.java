@@ -20,6 +20,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     private NotificationManager mNotificationManager;
     private static final int NOTIFICATION_ID = 0;
     private String eventName;
+    private String notificationType;
     private static final String PREFERENCE_LAST_NOTIF_ID_1 = "PREFERENCE_LAST_NOTIF_ID_1";
 
     // Notification channel ID.
@@ -41,11 +42,18 @@ public class AlarmReceiver extends BroadcastReceiver {
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
         Log.d("notif","getting this extra name : " + eventName);
         eventName = intent.getStringExtra("eventName");
+        notificationType = intent.getStringExtra("type");
         int notifyId = Integer.parseInt(intent.getAction());
-        deliverNotification(context, notifyId);
+        deliverNotification(context, notifyId, notificationType);
     }
 
-    private void deliverNotification(Context context, int notifyId) {
+    private void deliverNotification(Context context, int notifyId, String notificationType) {
+        String contentText="You have an event coming up!";
+        if (notificationType.equals("dayOf")) {
+            contentText = eventName + " is today!";
+        } else if (notificationType.equals("oneDay")) {
+            contentText = eventName + " coming up in one day!";
+        }
         Intent contentIntent = new Intent(context, MainActivity.class);
         PendingIntent contentPendingIntent = PendingIntent.getActivity
                 (context, notifyId, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -54,7 +62,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 //.setWhen(getStartLocalDateLong())
                 .setContentTitle("Countdown Tracker")
-                .setContentText(eventName + " coming up in one day!")
+                .setContentText(contentText)
                 .setContentIntent(contentPendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)

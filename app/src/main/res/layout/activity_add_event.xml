@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".AddEventActivity">
 
+    <TextView
+        android:id="@+id/add_event_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="10dp"
+        style="@style/text_view_style_title"
+        android:text="Add an event:" />
+
     <androidx.constraintlayout.widget.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -51,6 +61,7 @@
 
     <Button
         android:id="@+id/pick_date_button"
+        style="@style/AppTheme.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -74,13 +85,14 @@
 
     <Button
         android:id="@+id/finish_button"
+        style="@style/AppTheme.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
         android:onClick="AddToMasterList"
-        android:text="Add event!"
+        android:text="Confirm Event"
         app:layout_constraintStart_toStartOf="@+id/date_display_text"
         app:layout_constraintTop_toBottomOf="@+id/date_display_text"/>
 

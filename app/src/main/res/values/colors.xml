@@ -25,7 +25,41 @@
     <color name="light_blue_200">#FF81D4FA</color>
     <color name="light_blue_600">#FF039BE5</color>
     <color name="light_blue_900">#FF01579B</color>
+    <color name="main_color_use">#c0d6e4</color>
 
     <color name="transparent1">#00FFFFFF</color>
 
+    <color name="warmgrey_50">#FAF9F7</color>
+    <color name="warmgrey_100">#E8E6E1</color>
+    <color name="warmgrey_200">#D3CEC4</color>
+    <color name="warmgrey_300">#B8B2A7</color>
+    <color name="warmgrey_400">#A39E93</color>
+    <color name="warmgrey_500">#857F72</color>
+    <color name="warmgrey_600">#625D52</color>
+    <color name="warmgrey_700">#504A40</color>
+    <color name="warmgrey_800">#423D33</color>
+    <color name="warmgrey_900">#27241D</color>
+
+    <color name="coolgrey_50">#F5F7FA</color>
+    <color name="coolgrey_100">#E4E7EB</color>
+    <color name="coolgrey_200">#CBD2D9</color>
+    <color name="coolgrey_300">#9AA5B1</color>
+    <color name="coolgrey_400">#7B8794</color>
+    <color name="coolgrey_500">#616E7C</color>
+    <color name="coolgrey_600">#52606D</color>
+    <color name="coolgrey_700">#3E4C59</color>
+    <color name="coolgrey_800">#323F4B</color>
+    <color name="coolgrey_900">#1F2933</color>
+
+
+    <color name="darkgrey_50">#F7F7F7</color>
+    <color name="darkgrey_100">#E1E1E1</color>
+    <color name="darkgrey_200">#CFCFCF</color>
+    <color name="darkgrey_300">#B1B1B1</color>
+    <color name="darkgrey_400">#9E9E9E</color>
+    <color name="darkgrey_500">#7E7E7E</color>
+    <color name="darkgrey_600">#626262</color>
+    <color name="darkgrey_700">#515151</color>
+    <color name="darkgrey_800">#3B3B3B</color>
+    <color name="darkgrey_900">#222222</color>
 </resources>

@@ -1,7 +1,10 @@
 package com.qi.helloworld;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,15 +23,23 @@ public class WordListAdapter extends
 
     private final LayoutInflater mInflater;
     private List<Event> mEvents; // Cached copy of events
+    private String isCurrent;
+    private SharedPreferences sp;
+    private int currentDisplay;
+    private int currentColor;
 
-    public WordListAdapter(Context context) {
+    public WordListAdapter(Context context, String isCurrent) {
         mInflater = LayoutInflater.from(context);
+        this.isCurrent = isCurrent;
+
+        sp = PreferenceManager.getDefaultSharedPreferences(context);
+        this.currentDisplay = sp.getInt(SettingsActivity.PREFERENCE_DISPLAY_CODE,0);;
+        this.currentColor = sp.getInt(SettingsActivity.PREFERENCE_COLOR_CODE,0);;
     }
 
     @NonNull
     @Override
-    public WordListAdapter.WordViewHolder onCreateViewHolder(ViewGroup parent,
-                                                             int viewType) {
+    public WordListAdapter.WordViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // Inflate an item view.
         View mItemView = mInflater.inflate(R.layout.recyclerview_item, parent, false);
         return new WordViewHolder(mItemView, this);
@@ -41,9 +52,15 @@ public class WordListAdapter extends
         Event event = mEvents.get(position);
         String daysLeft;
         int daysLeftInt = event.getDaysLeft();
+        int[] ymd = event.getYearsMonthsDaysLeft();
+        if (isCurrent.equals("past")) daysLeftInt = -daysLeftInt;
 
-        if (daysLeftInt == 0) { daysLeft = "today!"; }
-        else { daysLeft = event.getDaysLeft() + ""; }
+        if (SettingsActivity.displayModes[currentDisplay].equals("Detailed")) {
+            daysLeft = ymd[0] + "y " + ymd[1] + "mo " + ymd[2] + "d "+ ymd[3] + "h " + ymd[4] + "min";
+        } else {
+            if (daysLeftInt == 0) { daysLeft = "today!"; }
+            else { daysLeft = daysLeftInt + ""; }
+        }
 
         String mCurrent = event.getName();
         holder.wordItemView.setText(mCurrent);
@@ -71,6 +88,13 @@ public class WordListAdapter extends
 
     void setEvents(List<Event> events){
         mEvents = events;
+        notifyDataSetChanged();
+    }
+
+    void refreshEvents() {
+        currentDisplay = sp.getInt(SettingsActivity.PREFERENCE_DISPLAY_CODE,0);
+        currentColor = sp.getInt(SettingsActivity.PREFERENCE_COLOR_CODE,0);
+        Log.d("ASDF","NOTIFYING DATA SET CHANGED!");
         notifyDataSetChanged();
     }
 

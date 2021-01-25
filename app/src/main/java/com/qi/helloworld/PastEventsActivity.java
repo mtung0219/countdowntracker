@@ -8,9 +8,13 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.util.Calendar;
@@ -37,7 +41,7 @@ public class PastEventsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_past_events);
 
         mRecyclerView = findViewById(R.id.recyclerview_past);
-        mAdapter = new WordListAdapter(this);
+        mAdapter = new WordListAdapter(this,"past");
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mEventViewModel = ViewModelProviders.of(this).get(EventViewModel.class);
@@ -90,6 +94,25 @@ public class PastEventsActivity extends AppCompatActivity {
         cal.set(Calendar.MONTH, month - 1);
         cal.set(Calendar.DAY_OF_MONTH, day);
         return cal.getTime();
+    }
+
+    /**
+     * On Click listener for items in menu.
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_past_events) {
+            Intent intent = new Intent(this, PastEventsActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

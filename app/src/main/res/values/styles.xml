@@ -5,6 +5,7 @@
         <item name="colorPrimary">@color/light_blue_900</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -25,8 +26,8 @@
 
     <!-- Base button styles, from standard material buttons. -->
     <style name="AppTheme.Button" parent="Widget.AppCompat.Button">
-        <item name="android:background">@color/default_background</item>
-        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textColor">@color/darkgrey_100</item>
+        <item name="android:background">@color/darkgrey_500</item>
         <item name="android:layout_marginTop">16dp</item>
     </style>
 
@@ -39,17 +40,27 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
+    <style name="card_background">
+        <item name="android:background">@color/darkgrey_800</item>
+        <item name="cardBackgroundColor">@color/darkgrey_800</item>
+    </style>
+
+    <style name="divider_style">
+        <item name="android:background">@color/darkgrey_500</item>
+    </style>
+
     <style name="text_view_style">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">
             @android:style/TextAppearance.Small</item>
-        <item name="android:background">@color/white</item>
+        <item name="android:background">@color/main_color_use</item>
         <item name="android:layout_marginTop">3dp</item>
         <item name="android:layout_marginBottom">3dp</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:padding">4dp</item>
         <item name="android:textColor">@color/black</item>
+        <item name="android:fontFamily">sans-serif</item>
     </style>
 
     <style name="text_view_style_main">
@@ -61,19 +72,35 @@
         <item name="android:layout_marginBottom">3dp</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:padding">4dp</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/darkgrey_300</item>
+        <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
     <style name="text_view_style_title">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">30sp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:background">@color/white</item>
+        <!--<item name="android:textStyle">bold</item>-->
         <item name="android:layout_marginTop">3dp</item>
         <item name="android:layout_marginBottom">3dp</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:padding">4dp</item>
-        <item name="android:textColor">@color/light_blue_900</item>
+        <item name="android:textColor">@color/darkgrey_300</item>
     </style>
+
+
+    <style name="text_view_style_main_card">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">
+            @android:style/TextAppearance.Large</item>
+        <item name="android:layout_marginTop">3dp</item>
+        <item name="android:layout_marginBottom">3dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:textColor">@color/darkgrey_300</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+
 </resources>

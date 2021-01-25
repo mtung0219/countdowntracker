@@ -9,11 +9,11 @@
 
     <TextView
         android:id="@+id/eventName_label2"
+        style="@style/text_view_style_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        style="@style/text_view_style_title"
         android:text="Past Events" />
 
     <TextView

@@ -64,7 +64,7 @@ public class AddEventActivity extends AppCompatActivity {
 
         Date pickedDate = getDate(this.year, this.month, this.day);
 
-        if (getDaysLeft(pickedDate) <= 0) {
+        if (getDaysLeft(pickedDate) < 0) {
             Toast.makeText(this, "Must pick a date in the future!",
                     Toast.LENGTH_LONG).show();
             this.year = -1;

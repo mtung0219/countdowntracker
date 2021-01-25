@@ -17,6 +17,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,13 +34,19 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.qi.helloworld.extra.MESSAGE";
     // Unique tag for the intent reply
 
-    public static final int TEXT_REQUEST = 1;
+    public static final int ADD_EVENT_REQUEST = 1;
+    public static final int SETTINGS_REQUEST = 2;
     private int mCount = 0;
     private RecyclerView mRecyclerView;
     private WordListAdapter mAdapter;
@@ -52,18 +59,38 @@ public class MainActivity extends AppCompatActivity {
     private static final int NOTIFICATION_ID = 0;
     private static final String PRIMARY_CHANNEL_ID =
             "primary_notification_channel";
+
     private static final String PREFERENCE_LAST_NOTIF_ID = "PREFERENCE_LAST_NOTIF_ID";
     private static final String SHARED_PREFS_FILE = "SHARED_PREFS_FILE";
+
+
+    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+
         ctx = this;
         mEventViewModel = ViewModelProviders.of(this).get(EventViewModel.class);
 
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int currentDisplay  = sharedPreferences.getInt(SettingsActivity.PREFERENCE_DISPLAY_CODE,0);
+        int currentColor  = sharedPreferences.getInt(SettingsActivity.PREFERENCE_COLOR_CODE,0);
+
+
         mRecyclerView = findViewById(R.id.recyclerview);
-        mAdapter = new WordListAdapter(this);
+        mAdapter = new WordListAdapter(this, "current");
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -133,11 +160,22 @@ public class MainActivity extends AppCompatActivity {
                                         mEventViewModel.deleteEvent(myEvent);
                                         Intent notifyIntent = new Intent(MainActivity.this, AlarmReceiver.class);
                                         notifyIntent.putExtra("eventName", deleteName);
+                                        notifyIntent.putExtra("type","oneDay");
                                         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                                         notifyIntent.setAction(deleteID+"");
                                         final PendingIntent alarmIntentCancel = PendingIntent.getBroadcast (
                                                 MainActivity.this, deleteID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                                        alarmManager.cancel(alarmIntentCancel);
+                                        alarmManager.cancel(alarmIntentCancel); //cancels 1-day alarm
+
+                                        Intent notifyIntent2 = new Intent(MainActivity.this, AlarmReceiver.class);
+                                        notifyIntent2.putExtra("eventName", deleteName);
+                                        notifyIntent.putExtra("type","dayOf");
+                                        notifyIntent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                        notifyIntent2.setAction((deleteID+1)+"");
+                                        final PendingIntent alarmIntentCancel2 = PendingIntent.getBroadcast (
+                                                MainActivity.this, deleteID+1, notifyIntent2, PendingIntent.FLAG_UPDATE_CURRENT);
+                                        alarmManager.cancel(alarmIntentCancel2); //cancels day-of alarm
+
                                     }
                                 })
                                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -155,11 +193,12 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Schedule a notification when an event is created.
      */
-    private void sendNotification(String eventName, Date d, int xId) {
+    private void sendNotification(String eventName, Date d, int xId, String notificationType) {
         Intent notifyIntent = new Intent(this, AlarmReceiver.class);
         notifyIntent.putExtra("eventName", eventName);
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         notifyIntent.setAction(xId+"");
+        notifyIntent.putExtra("type",notificationType);
         Log.d("asdf","adding this extra name : " + eventName + " with notif ID " + xId);
         final PendingIntent notifyPendingIntent = PendingIntent.getBroadcast
                 (this, xId, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -172,10 +211,11 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Generates unique notification IDs to make sure intents are not reused.
+     * Increments by 2 to accommodate the two notifications created.
      */
     private static int getNextNotifId(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        int id = sharedPreferences.getInt(PREFERENCE_LAST_NOTIF_ID, 0) + 1;
+        int id = sharedPreferences.getInt(PREFERENCE_LAST_NOTIF_ID, 0) + 2;
         if (id == Integer.MAX_VALUE) { id = 0; }
         sharedPreferences.edit().putInt(PREFERENCE_LAST_NOTIF_ID, id).apply();
         return id;
@@ -234,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == TEXT_REQUEST && resultCode == RESULT_OK) {
+        if (requestCode == ADD_EVENT_REQUEST && resultCode == RESULT_OK) {
             String reply_event_name = data.getStringExtra(AddEventActivity.EVENT_NAME_KEY);
             int reply_year= data.getIntExtra(AddEventActivity.YEAR_KEY,0);
             int reply_month= data.getIntExtra(AddEventActivity.MONTH_KEY,0);
@@ -242,19 +282,26 @@ public class MainActivity extends AppCompatActivity {
             Log.d("ASDF","original reply ints are " + reply_year + " " + reply_month + " " + reply_day);
             Date date = getDate(reply_year, reply_month, reply_day);
             int xId = getNextNotifId(this);
-            int xId2 = getNextNotifId(this);
+            int xId2;
+            if (xId == Integer.MAX_VALUE) { xId2 = 0; } else {xId2 = xId + 1; }
 
             Event event = new Event(reply_event_name, date,xId);
             Log.d("ASDF","original saved date is " + date.getTime());
             mEventViewModel.insert(event);
 
-            Date notifDate_oneBefore = getNotifDateOneDayLeft(reply_year, reply_month, reply_day);
+            int daysLeft = event.getDaysLeft();
+
+            // only send one-day notif if event date is not today
+            if (daysLeft > 0) {
+                Date notifDate_oneBefore = getNotifDateOneDayLeft(reply_year, reply_month, reply_day);
+                sendNotification(reply_event_name, notifDate_oneBefore,xId, "oneDay");
+            }
+
             Date notifDate_dayOf = getNotifDateDayOf(reply_year, reply_month, reply_day);
+            sendNotification(reply_event_name, notifDate_dayOf,xId2, "dayOf");
 
-            sendNotification(reply_event_name, notifDate_oneBefore,xId);
-            sendNotification(reply_event_name, notifDate_dayOf,xId2);
-
-        } else {
+        } else if (requestCode == SETTINGS_REQUEST && resultCode == RESULT_OK){
+            mAdapter.refreshEvents();
             //Toast.makeText(getApplicationContext(), "Something went wrong.", Toast.LENGTH_LONG).show();
         }
     }
@@ -299,22 +346,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * On Click listener for Past Events item in menu.
+     * On Click listener for items in menu.
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         if (id == R.id.action_past_events) {
-            // Add a toast just for confirmation
-            Toast.makeText(this, "Navigating to past events...",
-                    Toast.LENGTH_SHORT).show();
-
             Intent intent = new Intent(this, PastEventsActivity.class);
             startActivity(intent);
             return true;
+        } else if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivityForResult(intent, SETTINGS_REQUEST);
+            return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -379,7 +425,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, AddEventActivity.class);
         //String message = mMessageEditText.getText().toString();
         //intent.putExtra(EXTRA_MESSAGE, message);
-        startActivityForResult(intent, TEXT_REQUEST);
+        startActivityForResult(intent, ADD_EVENT_REQUEST);
 
         //Intent intent2 = new Intent(this, RoomWordsSample.class);
         //startActivity(intent2);
