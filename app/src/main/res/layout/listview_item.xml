@@ -3,7 +3,6 @@
     android:id="@+id/listview_indiv_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/appWidgetBackgroundColor"
     android:padding="@dimen/widget_margin"
     android:clickable="true"
     xmlns:tools="http://schemas.android.com/tools"
@@ -13,24 +12,31 @@
         android:id="@+id/word_textview_listver"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/daysleft_textview_listver"
         android:layout_alignParentLeft="true"
-        style="@style/text_view_style"
         tools:text="placeholder text"
-        android:clickable="false"
-        android:duplicateParentState="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textColor="@color/main_800"
+        android:layout_marginVertical="3dp"
+        android:layout_marginLeft="5dp"
+        android:layout_toLeftOf="@+id/daysleft_textview_listver"
+        android:fontFamily="sans-serif-light"
+        android:layout_marginStart="5dp" />
 
 
     <TextView
         android:id="@+id/daysleft_textview_listver"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/text_view_style"
+        android:gravity="end"
         tools:text="3"
-        android:duplicateParentState="true"
-        android:clickable="false"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:textColor="@color/main_800"
+        android:layout_marginRight="5dp"
+        android:layout_marginEnd="5dp"
+        android:fontFamily="sans-serif-light"
+        android:layout_marginVertical="3dp"/>
 
     <!--<View
         android:layout_width="match_parent"

@@ -29,7 +29,7 @@
         app:layout_constraintTop_toBottomOf="@+id/adView"
         app:layout_constraintStart_toStartOf="parent"
         android:padding="10dp"
-        style="@style/text_view_style_title"
+        android:textSize="30sp"
         android:text="Days Left Until:" />
 
     <!--<TextView
@@ -61,13 +61,11 @@
         app:layout_constraintTop_toTopOf="parent"/> -->
     <Button
         android:id="@+id/button_count"
-        style="@style/AppTheme.Button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:onClick="countUp"
         android:text="Add an event!"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

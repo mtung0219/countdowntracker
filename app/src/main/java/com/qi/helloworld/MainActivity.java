@@ -3,6 +3,7 @@ package com.qi.helloworld;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
@@ -16,18 +17,21 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 import java.util.Calendar;
 import java.util.Date;
 
 import java.util.List;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -63,12 +67,24 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREFERENCE_LAST_NOTIF_ID = "PREFERENCE_LAST_NOTIF_ID";
     private static final String SHARED_PREFS_FILE = "SHARED_PREFS_FILE";
 
+    private SharedPreferences sp;
+    private long mLastClickTime = 0;
 
     private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        sp = PreferenceManager.getDefaultSharedPreferences(this);
+        int currentDisplay  = sp.getInt(SettingsActivity.PREFERENCE_DISPLAY_CODE,0);
+        int currentColor  = sp.getInt(SettingsActivity.PREFERENCE_COLOR_CODE,0);
         super.onCreate(savedInstanceState);
+        if (currentColor == 0) {
+            Log.d("ASDF","NIGHT MODE NO");
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        } else {
+            Log.d("ASDF","NIGHT MODE YES");
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
         setContentView(R.layout.activity_main);
 
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
@@ -83,11 +99,6 @@ public class MainActivity extends AppCompatActivity {
 
         ctx = this;
         mEventViewModel = ViewModelProviders.of(this).get(EventViewModel.class);
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        int currentDisplay  = sharedPreferences.getInt(SettingsActivity.PREFERENCE_DISPLAY_CODE,0);
-        int currentColor  = sharedPreferences.getInt(SettingsActivity.PREFERENCE_COLOR_CODE,0);
-
 
         mRecyclerView = findViewById(R.id.recyclerview);
         mAdapter = new WordListAdapter(this, "current");
@@ -185,6 +196,18 @@ public class MainActivity extends AppCompatActivity {
                                 }) .show();
                     }
                 });
+
+        findViewById(R.id.button_count).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // prevent double clicks, using threshold time of 1 second
+                if (SystemClock.elapsedRealtime() - mLastClickTime < 1000){
+                    return;
+                }
+                mLastClickTime = SystemClock.elapsedRealtime();
+                countUp(v);
+            }
+        });
 
         helper.attachToRecyclerView(mRecyclerView);
         createNotificationChannel();
@@ -302,9 +325,31 @@ public class MainActivity extends AppCompatActivity {
 
         } else if (requestCode == SETTINGS_REQUEST && resultCode == RESULT_OK){
             mAdapter.refreshEvents();
+            /*int currentDisplay  = sp.getInt(SettingsActivity.PREFERENCE_DISPLAY_CODE,0);
+            int currentColor  = sp.getInt(SettingsActivity.PREFERENCE_COLOR_CODE,0);
+            if (currentColor == 0) {
+                getTheme().applyStyle(R.style.ThemeDay_HelloWorld, true);
+                //setTheme(R.style.ThemeDay_HelloWorld);
+            } else {
+                getTheme().applyStyle(R.style.Theme_HelloWorld, true);
+                //setTheme(R.style.Theme_HelloWorld);
+            }*/
+            reload();
             //Toast.makeText(getApplicationContext(), "Something went wrong.", Toast.LENGTH_LONG).show();
         }
     }
+
+    /**
+     * Reload this activity upon theme change.
+     */
+    public void reload() {
+        Intent intent = getIntent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        finish();
+        overridePendingTransition(0, 0);
+        startActivity(intent);
+    }
+
 
     /**
      * Creates notification channel for SDKs OREO and up.

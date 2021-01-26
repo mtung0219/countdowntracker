@@ -7,16 +7,14 @@
     android:id="@+id/recycler_cardview"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     card_view:cardCornerRadius="6dp"
-    card_view:cardElevation="10dp"
+    card_view:cardElevation="5dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="@style/card_background"
     android:layout_margin="5dp">
 
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="@style/card_background"
     android:layout_margin="5dp">
 
     <TextView
@@ -25,7 +23,6 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        style="@style/text_view_style_main_card"
         tools:text="placeholder text" />
 
     <!--<androidx.constraintlayout.widget.Guideline
@@ -38,7 +35,6 @@
         android:id="@+id/daysleft_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/text_view_style_main_card"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="3" />

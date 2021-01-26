@@ -2,7 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.android.recyclerview.MainActivity">
+    tools:context="com.example.android.recyclerview.MainActivity"
+    app:popupTheme="@style/myOverflowMenu">
     <item
         android:id="@+id/action_past_events"
         android:orderInCategory="100"

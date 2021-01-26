@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -55,6 +56,17 @@ public class SettingsActivity extends AppCompatActivity {
         finish();
     }
 
+
+    /**
+     * Inflates menu that goes to Past Events.
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
     /**
      * On Click listener for items in menu.
      */
@@ -64,10 +76,6 @@ public class SettingsActivity extends AppCompatActivity {
 
         if (id == R.id.action_past_events) {
             Intent intent = new Intent(this, PastEventsActivity.class);
-            startActivity(intent);
-            return true;
-        } else if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
             return true;
         }

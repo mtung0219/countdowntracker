@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -68,16 +70,28 @@ public class PastEventsActivity extends AppCompatActivity {
                     @Override
                     public void onSwiped(RecyclerView.ViewHolder viewHolder,
                                          int direction) {
-                        int position = viewHolder.getAdapterPosition();
-                        Event myEvent = mAdapter.getEventAtPosition(position);
-                        Toast.makeText(PastEventsActivity.this, "Deleting " +
-                                myEvent.getName(), Toast.LENGTH_LONG).show();
 
-                        // Delete the event
-                        mEventViewModel.deleteEvent(myEvent);
+                        new AlertDialog.Builder(PastEventsActivity.this)
+                                .setMessage("Are you sure you want to delete this event?")
+                                .setCancelable(false)
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        int position = viewHolder.getAdapterPosition();
+                                        Event myEvent = mAdapter.getEventAtPosition(position);
+                                        Toast.makeText(PastEventsActivity.this, "Deleting " +
+                                                myEvent.getName(), Toast.LENGTH_LONG).show();
+                                        // Delete the event
+                                        mEventViewModel.deleteEvent(myEvent);
+
+                                    }
+                                })
+                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        mAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
+                                    }
+                                }) .show();
                     }
                 });
-
         helper.attachToRecyclerView(mRecyclerView);
     }
 
@@ -103,11 +117,7 @@ public class PastEventsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_past_events) {
-            Intent intent = new Intent(this, PastEventsActivity.class);
-            startActivity(intent);
-            return true;
-        } else if (id == R.id.action_settings) {
+        if (id == R.id.action_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
             return true;

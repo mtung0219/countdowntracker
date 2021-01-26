@@ -1,12 +1,20 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.HelloWorld" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="Theme.HelloWorld" parent="Theme.AppCompat.DayNight.DarkActionBar">
 
-        <item name="actionBarStyle">@style/MyActionBar</item>
+        <item name="actionBarStyle">@style/MyActionBarDay</item>
+        <item name="android:itemTextAppearance">@style/MyActionBar.MenuTextStyleDay</item>
+        <item name="android:itemBackground">@drawable/menuitem_day</item>
         <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:buttonStyle">@style/AppTheme.ButtonDay</item>
+        <item name="cardViewStyle">@style/card_background_day</item>
+        <item name="android:textViewStyle">@style/text_view_style_main_card_day</item>
+        <item name="editTextStyle">@style/myEditText_Day</item>
+        <item name="android:textColorHint">@color/main_500</item>
+        <item name="android:textCursorDrawable">@null</item>
 
-        <item name="colorPrimary">@color/teal_700</item>
-        <item name="android:textColorPrimary">@color/teal_700</item>
+        <item name="colorPrimary">@color/main_500</item>
+        <item name="android:textColorPrimary">@color/main_800</item>
         <item name="colorPrimaryVariant">@color/green_background</item>
         <item name="colorOnPrimary">@color/purple_700</item>
         <!-- Secondary brand color. -->
@@ -19,11 +27,11 @@
 
         <!--<item name="android:background">@color/coolgrey_600</item>-->
 
-        <item name="android:windowBackground">@color/darkgrey_900</item>
-        <item name="android:navigationBarColor" tools:targetApi="l">@color/darkgrey_700</item>
-        <item name="android:colorPrimaryDark" tools:targetApi="l">@color/darkgrey_800</item>
+        <item name="android:windowBackground">@color/main_200</item>
+        <item name="android:navigationBarColor" tools:targetApi="l">@color/main_400</item>
+        <item name="android:colorPrimaryDark" tools:targetApi="l">@color/main_800</item>
 
-        <!-- Customize your theme here. -->
+
     </style>
 
     <style name="Theme.HelloWorld.NoActionBar">
@@ -35,24 +43,40 @@
 
     <style name="Theme.HelloWorld.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+
+    <!-- WIDGET THEME -->
     <style name="ThemeOverlay.HelloWorld.AppWidgetContainer" parent="">
-        <item name="appWidgetBackgroundColor">@color/white</item>
+        <item name="appWidgetBackgroundColor">@color/blue_background</item>
         <item name="appWidgetTextColor">@color/light_blue_50</item>
     </style>
 
-    <style name="MyActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">
-        <item name="background">@color/darkgrey_700</item>
-        <item name="titleTextStyle">@style/MyTheme.ActionBar.TitleTextStyle</item>
+
+    <style name="MyActionBarDay" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">
+        <item name="background">@color/main_400</item>
+        <item name="titleTextStyle">@style/MyTheme.ActionBar.TitleTextStyleDay</item>
         <item name="actionOverflowButtonStyle">@style/actionOverflowButtonStyle</item>
     </style>
 
-    <style name="MyTheme.ActionBar.TitleTextStyle" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
-        <item name="android:textColor">@color/darkgrey_200</item>
+
+    <style name="MyTheme.ActionBar.TitleTextStyleDay" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/main_800</item>
         <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textStyle">bold</item>
+        <!--<item name="android:textStyle">bold</item> -->
     </style>
 
     <style name="actionOverflowButtonStyle" parent="@style/Widget.AppCompat.Light.ActionButton.Overflow">
-        <item name="android:tint">@color/teal_700</item>
+        <item name="android:tint">@color/main_200</item>
+    </style>
+
+
+    <style name="MyActionBar.MenuTextStyleDay" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/main_800</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textStyle">normal</item>
+        <!--<item name="android:textSize">25sp</item> -->
+    </style>
+
+    <style name="myOverflowMenu" parent="@style/Widget.AppCompat.PopupMenu.Overflow">
+        <item name="background">@color/blue_background</item>
     </style>
 </resources>

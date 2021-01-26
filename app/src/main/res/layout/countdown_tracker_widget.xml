@@ -2,26 +2,23 @@
     android:id="@+id/widgetLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/appWidgetBackgroundColor"
     android:padding="@dimen/widget_margin"
-    android:theme="@style/ThemeOverlay.HelloWorld.AppWidgetContainer"
     android:clickable="true"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/main_300"
     android:focusable="true">
 
     <TextView
         android:layout_width="match_parent"
         android:id="@+id/widgetTitleLabel"
+        style="text_view_style_title"
         android:text="Days Left Until:"
-        android:textColor="@color/white"
-        android:background="@color/colorPrimary"
         android:textSize="18sp"
         android:textAllCaps="true"
         android:clickable="false"
-        android:duplicateParentState="true"
         android:layout_height="wrap_content"
-        android:padding="3dp"
-        android:focusable="true" />
+        android:fontFamily="sans-serif-light"
+        android:padding="3dp"/>
 
     <ListView
         android:id="@+id/listview"
@@ -29,8 +26,6 @@
         android:layout_height="wrap_content"
         tools:listitem="@layout/listview_item"
         android:clickable="false"
-        android:focusable="true"
-        android:duplicateParentState="true"
         android:layout_below="@+id/widgetTitleLabel"
         android:layout_above="@+id/widgetLastUpdated">
     </ListView>
@@ -39,20 +34,22 @@
         android:layout_width="match_parent"
         android:id="@+id/widgetLastUpdated"
         android:text="Problem updating. Go to app to manually update."
-        android:textColor="@color/black"
         android:textSize="8sp"
         android:gravity="center"
         android:textAllCaps="false"
-        android:clickable="false"
-        android:duplicateParentState="true"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/widgetButton"
-        android:focusable="true" />
+        android:fontFamily="sans-serif-light"
+        android:layout_above="@+id/widgetButton"/>
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/button_widget"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="1dp"
         android:text="Go To App"
         android:id="@+id/widgetButton"
+        android:fontFamily="sans-serif-light"
         android:layout_alignParentBottom="true">
     </Button>
 
