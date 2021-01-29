@@ -1,4 +1,4 @@
-package com.qi.helloworld;
+package com.qi.daysleftcountdown;
 
 import android.util.Log;
 
@@ -134,17 +134,20 @@ public class Event implements Serializable {
         Calendar dayOne = (Calendar) now.clone(),
                 dayTwo = (Calendar) later.clone();
 
+        boolean isSwapped = false; // isSwapped false means that it is a past event
         if (dayTwo.getTime().getTime() > dayOne.getTime().getTime()) {
             //swap them, dayOne is always the later one
             Calendar temp = dayOne;
             dayOne = dayTwo;
             dayTwo = temp;
+            isSwapped = true;
         }
         int yearsBetween = 0;
         int monthsBetween = 0;
         int daysBetween = 0;
         int hoursBetween = 0;
         int minutesBetween = 0;
+        int daysBetweenYear = 0;
 
         while (dayOne.getTime().getTime() > dayTwo.getTime().getTime()) {
             yearsBetween += 1;
@@ -157,6 +160,16 @@ public class Event implements Serializable {
         }
 
         while (dayOne.getTime().getTime() > dayTwo.getTime().getTime()) {
+            daysBetweenYear += 1;
+            dayOne.add(Calendar.SECOND, -1 * 60 * 60 * 24);
+        }
+
+        if (dayOne.getTime().getTime() < dayTwo.getTime().getTime() && isSwapped) {
+            daysBetweenYear -= 1;
+            dayOne.add(Calendar.SECOND, 1 * 60 * 60 * 24);
+        }
+
+        /*while (dayOne.getTime().getTime() > dayTwo.getTime().getTime()) {
             monthsBetween += 1;
             dayOne.add(Calendar.MONTH, -1);
         }
@@ -194,9 +207,10 @@ public class Event implements Serializable {
         if (dayOne.getTime().getTime() < dayTwo.getTime().getTime()) {
             minutesBetween -= 1;
             dayOne.add(Calendar.MILLISECOND, 1000 * 60);
-        }
+        }*/
 
-        return new int[]{yearsBetween, monthsBetween, daysBetween, hoursBetween, minutesBetween};
+        //return new int[]{yearsBetween, monthsBetween, daysBetween, hoursBetween, minutesBetween};
+        return new int[]{yearsBetween, daysBetweenYear};
 
     }
     @Ignore

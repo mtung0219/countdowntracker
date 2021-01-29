@@ -1,4 +1,4 @@
-package com.qi.helloworld;
+package com.qi.daysleftcountdown;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,10 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -28,11 +25,7 @@ import java.util.List;
  * User can still swipe left or right to delete.
  */
 public class PastEventsActivity extends AppCompatActivity {
-    public static final String EXTRA_MESSAGE
-            = "com.qi.helloworld.extra.MESSAGE";
-    // Unique tag for the intent reply
-    public static final int TEXT_REQUEST = 1;
-    private int mCount = 0;
+
     private RecyclerView mRecyclerView;
     private WordListAdapter mAdapter;
     private EventViewModel mEventViewModel;
@@ -119,10 +112,34 @@ public class PastEventsActivity extends AppCompatActivity {
 
         if (id == R.id.action_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, MainActivity.SETTINGS_REQUEST);
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Handles the case when Settings is accessed from the Past Events activity.
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == MainActivity.SETTINGS_REQUEST && resultCode == RESULT_OK){
+            mAdapter.refreshEvents();
+            reload();
+        }
+    }
+
+    /**
+     * Reload Main activity upon theme change.
+     */
+    public void reload() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        overridePendingTransition(0, 0);
+        startActivity(intent);
+        finish();
     }
 
 }

@@ -1,4 +1,4 @@
-package com.qi.helloworld;
+package com.qi.daysleftcountdown;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,6 +13,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,8 +36,8 @@ public class WordListAdapter extends
         this.isCurrent = isCurrent;
 
         sp = PreferenceManager.getDefaultSharedPreferences(context);
-        this.currentDisplay = sp.getInt(SettingsActivity.PREFERENCE_DISPLAY_CODE,0);;
-        this.currentColor = sp.getInt(SettingsActivity.PREFERENCE_COLOR_CODE,0);;
+        this.currentDisplay = sp.getInt(SettingsActivity.PREFERENCE_DISPLAY_CODE,0);
+        this.currentColor = sp.getInt(SettingsActivity.PREFERENCE_COLOR_CODE,0);
     }
 
     @NonNull
@@ -50,21 +53,46 @@ public class WordListAdapter extends
                                  int position) {
         // Retrieve the data for that position.
         Event event = mEvents.get(position);
-        String daysLeft;
+        String daysLeft="";
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(event.getDate());
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH) + 1;
+        int day = c.get(Calendar.DAY_OF_MONTH);
+        String yr = year + "";
+        String mo = month + "";
+        if (month < 10) mo = "0" + mo;
+        String dy = day + "";
+        if (day < 10) dy = "0" + dy;
+
+
+
         int daysLeftInt = event.getDaysLeft();
         int[] ymd = event.getYearsMonthsDaysLeft();
-        if (isCurrent.equals("past")) daysLeftInt = -daysLeftInt;
+        Log.d("ASDF", ymd[1] + " d left");
+        if (isCurrent.equals("past")) {
+            daysLeftInt = -daysLeftInt;
+        }
 
-        if (SettingsActivity.displayModes[currentDisplay].equals("Detailed")) {
-            daysLeft = ymd[0] + "y " + ymd[1] + "mo " + ymd[2] + "d "+ ymd[3] + "h " + ymd[4] + "min";
+        if (daysLeftInt ==0 ) {daysLeft = "today";}
+        else if (SettingsActivity.displayModes[currentDisplay].equals("Year/Month/Day")) {
+            if (ymd[0] > 0) daysLeft += ymd[0] + "y ";
+            if (ymd[1] > 0) {
+                int months = (int) (ymd[1] / 30.5);
+                if (months > 0 || ymd[0] > 0) daysLeft += months + "mo ";
+                int days = (int) (ymd[1] % 30.5);
+             daysLeft += days + "d";
+                //daysLeft += ymd[1] + "d";
+            }
         } else {
-            if (daysLeftInt == 0) { daysLeft = "today!"; }
-            else { daysLeft = daysLeftInt + ""; }
+            daysLeft = daysLeftInt + "";
         }
 
         String mCurrent = event.getName();
         holder.wordItemView.setText(mCurrent);
         holder.daysLeftItemView.setText(daysLeft);
+        holder.dateItemView.setText(mo + "/" + dy + "/" + yr);
         /*int[] colorSchemeUse = holder.colorSchemeMagenta;
 
         if (daysLeftInt < 1) { holder.cv.setCardBackgroundColor(colorSchemeUse[6]); }
@@ -103,6 +131,7 @@ public class WordListAdapter extends
             implements View.OnClickListener {
         public final TextView wordItemView;
         public final TextView daysLeftItemView;
+        public final TextView dateItemView;
         public final CardView cv;
         public final int[] colorScheme;
         public final int[] colorSchemeMagenta;
@@ -112,6 +141,8 @@ public class WordListAdapter extends
             super(itemView);
             wordItemView = itemView.findViewById(R.id.word_textview);
             daysLeftItemView = itemView.findViewById(R.id.daysleft_textview);
+            dateItemView = itemView.findViewById(R.id.date_textview);
+
             cv = itemView.findViewById(R.id.recycler_cardview);
             colorScheme = new int[7];
             //#fcde9c,#faa476,#f0746e,#e34f6f,#dc3977,#b9257a,#7c1d6f

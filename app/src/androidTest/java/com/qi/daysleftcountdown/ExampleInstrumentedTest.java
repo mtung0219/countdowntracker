@@ -1,4 +1,4 @@
-package com.qi.helloworld;
+package com.qi.daysleftcountdown;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.qi.helloworld", appContext.getPackageName());
+        assertEquals("com.qi.daysleftcountdown", appContext.getPackageName());
     }
 }

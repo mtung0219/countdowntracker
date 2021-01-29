@@ -1,4 +1,4 @@
-package com.qi.helloworld;
+package com.qi.daysleftcountdown;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -14,7 +14,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-@Database(entities = {Event.class}, version = 3, exportSchema = false)
+@Database(entities = {Event.class}, version = 4, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class EventRoomDatabase extends RoomDatabase {
 

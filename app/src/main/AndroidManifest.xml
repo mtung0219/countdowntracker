@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.qi.helloworld">
+    package="com.qi.daysleftcountdown">
 
     <application
         android:allowBackup="true"
@@ -11,21 +11,21 @@
         android:theme="@style/Theme.HelloWorld">
 
 
-        <activity android:name=".SettingsActivity" />
+        <activity android:name="com.qi.daysleftcountdown.SettingsActivity" />
         <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713" />
 
         <activity
-            android:name=".configureWidget"/>
+            android:name="com.qi.daysleftcountdown.configureWidget"/>
 
-        <receiver android:name=".CountdownTrackerWidget">
+        <receiver android:name="com.qi.daysleftcountdown.CountdownTrackerWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.intent.action.DATE_CHANGED" />
                 <action android:name="android.intent.action.TIME_SET" />
-                <action android:name="com.qi.helloworld.WIDGET_BUTTON" />
+                <action android:name="com.qi.daysleftcountdown.WIDGET_BUTTON" />
             </intent-filter>
 
             <meta-data
@@ -33,19 +33,19 @@
                 android:resource="@xml/countdown_tracker_widget_info" />
         </receiver>
         <receiver
-            android:name=".AlarmReceiver"
+            android:name="com.qi.daysleftcountdown.AlarmReceiver"
             android:enabled="true"
             android:exported="false"
             android:process=":remote" />
 
         <service
-            android:name=".CountdownTrackerWidgetRemoteViewsService"
+            android:name="com.qi.daysleftcountdown.CountdownTrackerWidgetRemoteViewsService"
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
-        <activity android:name=".PastEventsActivity" />
-        <activity android:name=".AddEventActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name="com.qi.daysleftcountdown.PastEventsActivity" />
+        <activity android:name="com.qi.daysleftcountdown.AddEventActivity" />
+        <activity android:name="com.qi.daysleftcountdown.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />

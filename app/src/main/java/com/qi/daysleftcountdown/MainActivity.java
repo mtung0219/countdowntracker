@@ -1,9 +1,8 @@
-package com.qi.helloworld;
+package com.qi.daysleftcountdown;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
@@ -19,12 +18,10 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 import java.util.Calendar;
 import java.util.Date;
@@ -46,12 +43,9 @@ import com.google.android.gms.ads.initialization.OnInitializationCompleteListene
 import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String EXTRA_MESSAGE = "com.qi.helloworld.extra.MESSAGE";
-    // Unique tag for the intent reply
 
     public static final int ADD_EVENT_REQUEST = 1;
     public static final int SETTINGS_REQUEST = 2;
-    private int mCount = 0;
     private RecyclerView mRecyclerView;
     private WordListAdapter mAdapter;
     private EventViewModel mEventViewModel;
@@ -86,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
         setContentView(R.layout.activity_main);
+
 
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
@@ -255,8 +250,10 @@ public class MainActivity extends AppCompatActivity {
             testStringArray[i]=(finalEvents.get(i).getName());
             testLongArray[i] = (finalEvents.get(i).getDateLong());
         }
-        String teststring = finalEvents.get(0).getName();
-
+        String teststring = "";
+        if (finalEvents.size() > 0) {
+            teststring = finalEvents.get(0).getName();
+        }
         int[] ids = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(context, CountdownTrackerWidget.class));
 
         Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE);

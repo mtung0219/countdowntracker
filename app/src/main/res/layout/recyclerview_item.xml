@@ -19,25 +19,41 @@
 
     <TextView
         android:id="@+id/word_textview"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline1"
         app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginBottom="0dp"
+        android:padding="0dp"
         tools:text="placeholder text" />
 
-    <!--<androidx.constraintlayout.widget.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/guideline1"
-        app:layout_constraintGuide_end="100dp"
-        android:orientation="vertical"/> -->
+        app:layout_constraintGuide_percent="0.6"
+        android:orientation="vertical"/>
     <TextView
         android:id="@+id/daysleft_textview"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/guideline1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="3" />
+        android:gravity="end"
+        tools:text="3y 10mo 27d" />
+
+    <TextView
+        android:id="@+id/date_textview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline1"
+        app:layout_constraintTop_toBottomOf="@+id/word_textview"
+        tools:text="01/29/2021"
+        android:textSize="13sp"
+        android:layout_marginTop="0dp"/>
 
     <!--<View
         android:layout_width="match_parent"

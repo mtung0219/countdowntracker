@@ -1,8 +1,7 @@
-package com.qi.helloworld;
+package com.qi.daysleftcountdown;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,7 +9,6 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
@@ -21,8 +19,8 @@ public class SettingsActivity extends AppCompatActivity {
     private SharedPreferences sp;
     private Spinner dateSpinner;
     private Spinner colorSpinner;
-    public static final String[] displayModes = new String[]{"Detailed", "Day Only"};;
-    public static final String[] colorSchemes= new String[]{"Day","Night"};
+    public static final String[] displayModes = new String[]{"Year/Month/Day", "Day Only"};;
+    public static final String[] colorSchemes= new String[]{"Light","Night"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +40,6 @@ public class SettingsActivity extends AppCompatActivity {
 
         dateSpinner.setSelection(currentDisplay);
         colorSpinner.setSelection(currentColor);
-
     }
 
     /**

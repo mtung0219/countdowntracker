@@ -1,4 +1,4 @@
-package com.qi.helloworld;
+package com.qi.daysleftcountdown;
 
 import androidx.room.TypeConverter;
 import java.util.Date;

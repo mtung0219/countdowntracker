@@ -1,4 +1,4 @@
-package com.qi.helloworld;
+package com.qi.daysleftcountdown;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -12,26 +12,19 @@ import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.ListView;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
 public class CountdownTrackerWidget extends AppWidgetProvider {
     private boolean first_sched_run2 = true;
-    public static String WIDGET_BUTTON = "com.qi.helloworld.WIDGET_BUTTON";
     private String doesthiswork = "???";
     private String[] doesthisworkarray;
     private long[] datelongarray;
@@ -177,7 +170,6 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
                 doesthisworkarray = getArrayFromIntent;
                 datelongarray = getLongFromIntent;
             } else {
-
                 SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
                 Gson gson = new Gson();
                 String jsonText = prefs.getString("eventList", null);

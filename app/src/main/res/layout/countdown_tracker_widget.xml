@@ -18,7 +18,8 @@
         android:clickable="false"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-light"
-        android:padding="3dp"/>
+        android:textColor="@color/main_800"
+        android:padding="6dp"/>
 
     <ListView
         android:id="@+id/listview"
@@ -39,6 +40,7 @@
         android:textAllCaps="false"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-light"
+        android:textColor="@color/main_800"
         android:layout_above="@+id/widgetButton"/>
     <Button
         android:layout_width="match_parent"
@@ -48,6 +50,7 @@
         android:layout_marginBottom="5dp"
         android:layout_marginTop="1dp"
         android:text="Go To App"
+        android:textColor="@color/main_800"
         android:id="@+id/widgetButton"
         android:fontFamily="sans-serif-light"
         android:layout_alignParentBottom="true">

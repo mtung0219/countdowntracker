@@ -15,7 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:textSize="30sp"
         android:padding="10dp"
-        android:text="Past Events" />
+        android:text="@string/past_events" />
 
     <TextView
         android:id="@+id/daysLeft_label2"
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text="Days Ago"
+        android:text="@string/days_ago"
         android:textSize="30sp"
         android:padding="10dp"
         android:gravity="center_horizontal" />
@@ -35,7 +35,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/eventName_label2"
-        android:background="@android:color/black"/>
+        style="@style/divider_style"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_past"

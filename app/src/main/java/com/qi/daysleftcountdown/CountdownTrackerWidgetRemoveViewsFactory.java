@@ -1,35 +1,33 @@
-package com.qi.helloworld;
+package com.qi.daysleftcountdown;
 
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 public class CountdownTrackerWidgetRemoveViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     private Context mContext;
     private int appWidgetId;
-    private List<String> widgetList;
     private String doesthiswork;
     private String[] doesthisworkarray;
     private long[] datelongarray;
     private Date dateNow;
+    private SharedPreferences sp;
+    private int currentDisplay;
 
-    private void updateWidgetListView() {
-        widgetList = new ArrayList<String>();
-        this.widgetList.add("asdf");
-        this.widgetList.add("asdf2");
-        this.widgetList.add("asdf3");
-    }
+
     public CountdownTrackerWidgetRemoveViewsFactory(Context applicationContext, Intent intent) {
         Log.d("Loading","REMOTE VIEWS FACTORY constructor called");
         mContext = applicationContext;
+        sp = PreferenceManager.getDefaultSharedPreferences(applicationContext);
+        this.currentDisplay = sp.getInt(SettingsActivity.PREFERENCE_DISPLAY_CODE,0);
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
         doesthiswork = intent.getStringExtra("doesthiswork");
@@ -39,24 +37,14 @@ public class CountdownTrackerWidgetRemoveViewsFactory implements RemoteViewsServ
     }
 
     @Override
-    public void onCreate() { updateWidgetListView(); }
+    public void onCreate() {}
 
     @Override
     public void onDataSetChanged() {
-        Log.d("Loading","ON DATA SET CHANGE CALLED");
-
-        updateWidgetListView();
-
-        EventRoomDatabase db = EventRoomDatabase.getDatabase(mContext.getApplicationContext());
-        EventDao mEventDao = db.eventDao();
-
-
-        //Log.d("Loading", "string value of db is " + String.valueOf(EventsFromRoom));
     }
 
     @Override
     public void onDestroy() {
-        widgetList.clear();
     }
 
     @Override
@@ -75,10 +63,25 @@ public class CountdownTrackerWidgetRemoveViewsFactory implements RemoteViewsServ
         if (doesthisworkarray != null)
             remoteView.setTextViewText(R.id.word_textview_listver, doesthisworkarray[position]);
 
-        String daysLeft;
+        String daysLeft="";
         Date d = new Date( datelongarray[position]);
-        if (getDaysLeft(d) == 0) { daysLeft = "today!"; }
-        else { daysLeft = getDaysLeft(d) + ""; }
+        int daysLeftInt = getDaysLeft(d);
+        int[] ymd = getYearsMonthsDaysLeft(d);
+
+
+        if (daysLeftInt ==0 ) {daysLeft = "today";}
+        else if (SettingsActivity.displayModes[currentDisplay].equals("Year/Month/Day")) {
+            if (ymd[0] > 0) daysLeft += ymd[0] + "y ";
+            if (ymd[1] > 0) {
+                int months = (int) (ymd[1] / 30.5);
+                if (months > 0 || ymd[0] > 0) daysLeft += months + "mo ";
+                int days = (int) (ymd[1] % 30.5);
+                daysLeft += days + "d";
+                //daysLeft += ymd[1] + "d";
+            }
+        } else {
+            daysLeft = daysLeftInt + "";
+        }
 
         if (datelongarray != null) {
             remoteView.setTextViewText(R.id.daysleft_textview_listver, daysLeft);
@@ -128,6 +131,15 @@ public class CountdownTrackerWidgetRemoveViewsFactory implements RemoteViewsServ
         return c.getTime();
     }
 
+    public int[] getYearsMonthsDaysLeft(Date d) {
+        Calendar now = Calendar.getInstance();
+        Calendar later = Calendar.getInstance();
+        //now.setTimeInMillis(getNowInMillis());
+        now.setTime(dateNow);
+        later.setTime(d);
+        return timeBetween(now, later);
+    }
+
 
     private static int daysBetween(Calendar now, Calendar later){
         // credit to John Leehey from stackOverflow
@@ -161,6 +173,45 @@ public class CountdownTrackerWidgetRemoveViewsFactory implements RemoteViewsServ
             if (flipResult) return -(extraDays - dayTwo.get(Calendar.DAY_OF_YEAR) + dayOneOriginalYearDays);
             else return extraDays - dayTwo.get(Calendar.DAY_OF_YEAR) + dayOneOriginalYearDays ;
         }
+    }
+
+    private static int[] timeBetween(Calendar now, Calendar later) {
+        Calendar dayOne = (Calendar) now.clone(),
+                dayTwo = (Calendar) later.clone();
+
+        boolean isSwapped = false; // isSwapped false means that it is a past event
+        if (dayTwo.getTime().getTime() > dayOne.getTime().getTime()) {
+            //swap them, dayOne is always the later one
+            Calendar temp = dayOne;
+            dayOne = dayTwo;
+            dayTwo = temp;
+            isSwapped = true;
+        }
+        int yearsBetween = 0;
+        int daysBetweenYear = 0;
+
+        while (dayOne.getTime().getTime() > dayTwo.getTime().getTime()) {
+            yearsBetween += 1;
+            dayOne.add(Calendar.YEAR, -1);
+        }
+
+        if (dayOne.getTime().getTime() < dayTwo.getTime().getTime()) {
+            yearsBetween -= 1;
+            dayOne.add(Calendar.YEAR, 1);
+        }
+
+        while (dayOne.getTime().getTime() > dayTwo.getTime().getTime()) {
+            daysBetweenYear += 1;
+            dayOne.add(Calendar.SECOND, -1 * 60 * 60 * 24);
+        }
+
+        if (dayOne.getTime().getTime() < dayTwo.getTime().getTime() && isSwapped) {
+            daysBetweenYear -= 1;
+            dayOne.add(Calendar.SECOND, 1 * 60 * 60 * 24);
+        }
+
+        return new int[]{yearsBetween, daysBetweenYear};
+
     }
 
 }
