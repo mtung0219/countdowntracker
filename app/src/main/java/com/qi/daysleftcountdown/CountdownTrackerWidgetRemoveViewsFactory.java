@@ -16,7 +16,7 @@ public class CountdownTrackerWidgetRemoveViewsFactory implements RemoteViewsServ
     private Context mContext;
     private int appWidgetId;
     private String doesthiswork;
-    private String[] doesthisworkarray;
+    private String[] eventArray;
     private long[] datelongarray;
     private Date dateNow;
     private SharedPreferences sp;
@@ -24,14 +24,13 @@ public class CountdownTrackerWidgetRemoveViewsFactory implements RemoteViewsServ
 
 
     public CountdownTrackerWidgetRemoveViewsFactory(Context applicationContext, Intent intent) {
-        Log.d("Loading","REMOTE VIEWS FACTORY constructor called");
         mContext = applicationContext;
         sp = PreferenceManager.getDefaultSharedPreferences(applicationContext);
         this.currentDisplay = sp.getInt(SettingsActivity.PREFERENCE_DISPLAY_CODE,0);
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
         doesthiswork = intent.getStringExtra("doesthiswork");
-        doesthisworkarray = intent.getStringArrayExtra("doesthisworkarray");
+        eventArray = intent.getStringArrayExtra("doesthisworkarray");
         datelongarray = intent.getLongArrayExtra("dateLongArray");
         dateNow = getNow();
     }
@@ -49,19 +48,18 @@ public class CountdownTrackerWidgetRemoveViewsFactory implements RemoteViewsServ
 
     @Override
     public int getCount() {
-        if (doesthisworkarray != null) return doesthisworkarray.length;
+        if (eventArray != null) return eventArray.length;
         else return 0;
     }
 
     @Override
     public RemoteViews getViewAt(int position) {
-        Log.d("Loading", "getting remoteView at position " + position);
 
         RemoteViews remoteView = new RemoteViews(mContext.getPackageName(),
                 R.layout.listview_item);
 
-        if (doesthisworkarray != null)
-            remoteView.setTextViewText(R.id.word_textview_listver, doesthisworkarray[position]);
+        if (eventArray != null)
+            remoteView.setTextViewText(R.id.word_textview_listver, eventArray[position]);
 
         String daysLeft="";
         Date d = new Date( datelongarray[position]);
@@ -146,7 +144,6 @@ public class CountdownTrackerWidgetRemoveViewsFactory implements RemoteViewsServ
         Calendar dayOne = (Calendar) now.clone(),
                 dayTwo = (Calendar) later.clone();
         boolean flipResult;
-        Log.d("ASDF2","finding days between " + dayOne.getTime().getTime() + " and " +  dayTwo.getTime().getTime());
 
         if (dayOne.get(Calendar.YEAR) == dayTwo.get(Calendar.YEAR)) {
             //return Math.abs(dayOne.get(Calendar.DAY_OF_YEAR) - dayTwo.get(Calendar.DAY_OF_YEAR));

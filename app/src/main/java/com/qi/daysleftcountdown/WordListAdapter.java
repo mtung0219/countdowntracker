@@ -15,7 +15,6 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,14 +41,14 @@ public class WordListAdapter extends
 
     @NonNull
     @Override
-    public WordListAdapter.WordViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public WordListAdapter.WordViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // Inflate an item view.
         View mItemView = mInflater.inflate(R.layout.recyclerview_item, parent, false);
         return new WordViewHolder(mItemView, this);
     }
 
     @Override
-    public void onBindViewHolder(WordListAdapter.WordViewHolder holder,
+    public void onBindViewHolder(@NonNull WordListAdapter.WordViewHolder holder,
                                  int position) {
         // Retrieve the data for that position.
         Event event = mEvents.get(position);
@@ -70,7 +69,6 @@ public class WordListAdapter extends
 
         int daysLeftInt = event.getDaysLeft();
         int[] ymd = event.getYearsMonthsDaysLeft();
-        Log.d("ASDF", ymd[1] + " d left");
         if (isCurrent.equals("past")) {
             daysLeftInt = -daysLeftInt;
         }
@@ -122,7 +120,6 @@ public class WordListAdapter extends
     void refreshEvents() {
         currentDisplay = sp.getInt(SettingsActivity.PREFERENCE_DISPLAY_CODE,0);
         currentColor = sp.getInt(SettingsActivity.PREFERENCE_COLOR_CODE,0);
-        Log.d("ASDF","NOTIFYING DATA SET CHANGED!");
         notifyDataSetChanged();
     }
 

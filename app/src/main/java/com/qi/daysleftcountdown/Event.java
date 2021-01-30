@@ -143,10 +143,6 @@ public class Event implements Serializable {
             isSwapped = true;
         }
         int yearsBetween = 0;
-        int monthsBetween = 0;
-        int daysBetween = 0;
-        int hoursBetween = 0;
-        int minutesBetween = 0;
         int daysBetweenYear = 0;
 
         while (dayOne.getTime().getTime() > dayTwo.getTime().getTime()) {
@@ -219,7 +215,6 @@ public class Event implements Serializable {
         Calendar dayOne = (Calendar) now.clone(),
                 dayTwo = (Calendar) later.clone();
         boolean flipResult;
-        Log.d("ASDF2","finding days between " + dayOne.getTime().getTime() + " and " +  dayTwo.getTime().getTime());
 
         if (dayOne.get(Calendar.YEAR) == dayTwo.get(Calendar.YEAR)) {
             //return Math.abs(dayOne.get(Calendar.DAY_OF_YEAR) - dayTwo.get(Calendar.DAY_OF_YEAR));
@@ -248,22 +243,6 @@ public class Event implements Serializable {
         }
     }
 
-    @Ignore
-    public String get_date_string() {
-        Calendar c = Calendar.getInstance();
-        c.setTime(this.date);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-        int year = c.get(Calendar.YEAR);
-        String month_string = Integer.toString(month);
-        String day_string = Integer.toString(day);
-        String year_string = Integer.toString(year);
-
-        return (month_string +
-                "/" + day_string +
-                "/" + year_string);
-    }
-
     /*@Override
     public int compareTo(Event otherEvent) {
         if (otherEvent.getDate().after(this.getDate())) {
@@ -274,6 +253,5 @@ public class Event implements Serializable {
             return 1;
         }
     }*/
-
 
 }

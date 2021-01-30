@@ -19,7 +19,7 @@ public class SettingsActivity extends AppCompatActivity {
     private SharedPreferences sp;
     private Spinner dateSpinner;
     private Spinner colorSpinner;
-    public static final String[] displayModes = new String[]{"Year/Month/Day", "Day Only"};;
+    public static final String[] displayModes = new String[]{"Year/Month/Day", "Day Only"};
     public static final String[] colorSchemes= new String[]{"Light","Night"};
 
     @Override

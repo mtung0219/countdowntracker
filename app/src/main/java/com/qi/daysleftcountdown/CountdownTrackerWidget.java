@@ -19,18 +19,16 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
 public class CountdownTrackerWidget extends AppWidgetProvider {
     private boolean first_sched_run2 = true;
     private String doesthiswork = "???";
-    private String[] doesthisworkarray;
+    private String[] eventArray;
     private long[] datelongarray;
     Random r = new Random();
     int random = r.nextInt(999999);
-    private static final String PREFERENCE_LAST_NOTIF_ID_widget = "PREFERENCE_LAST_NOTIF_ID_widget";
     private static final String SHARED_PREFS_FILE = "SHARED_PREFS_FILE";
 
 
@@ -49,7 +47,7 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
         intent.putExtra("doesthiswork",doesthiswork);
-        intent.putExtra("doesthisworkarray",doesthisworkarray);
+        intent.putExtra("doesthisworkarray",eventArray);
         intent.putExtra("dateLongArray",datelongarray);
 
         //intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
@@ -62,12 +60,10 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.widgetButton, pendingI);
 
         Calendar now = Calendar.getInstance();
-        if (doesthisworkarray != null && datelongarray != null) {
-            Log.d("Loading","widget full update firing");
+        if (eventArray != null && datelongarray != null) {
             views.setTextViewText(R.id.widgetLastUpdated,"Last updated " + now.getTime().toString());
             appWidgetManager.updateAppWidget(appWidgetId, views);
         } else {
-            Log.d("Loading","widget partial update firing");
             views.setTextViewText(R.id.widgetLastUpdated,"Last updated " + now.getTime().toString());
             appWidgetManager.partiallyUpdateAppWidget(appWidgetId, views);
         }
@@ -76,15 +72,6 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
         //appWidgetManager.updateAppWidget(appWidgetId, null);
 
         //context.startService(intent);
-    }
-
-    private String dateToString(Calendar c) {
-        int y = c.get(Calendar.YEAR);
-        int m = c.get(Calendar.MONTH);
-        int d = c.get(Calendar.DAY_OF_MONTH);
-        int h = c.get(Calendar.HOUR);
-        int z = c.get(Calendar.MINUTE);
-        return m + "/" + d + "/" + y + " " + h + ":" + z;
     }
 
     @Override
@@ -105,28 +92,8 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
-    private long getTestLocalDateLong() {
-        Calendar c = Calendar.getInstance();
-        Date prelimDate = c.getTime();
-
-        c.setTime(prelimDate);
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-
-        c.set(Calendar.YEAR, year);
-        c.set(Calendar.MONTH, month);
-        c.set(Calendar.DAY_OF_MONTH, day);
-        c.set(Calendar.HOUR_OF_DAY,17);
-        c.set(Calendar.MINUTE, 10);
-        c.set(Calendar.SECOND, 0);
-        c.set(Calendar.MILLISECOND, 0);
-        return c.getTime().getTime();
-    }
-
     @Override
     public void onEnabled(Context context) {
-        Log.d("Loading","widget enabled firing");
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("first_sched_run3", true);
@@ -142,10 +109,7 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-        Log.d("Loading","widget on receive firing");
         final String action = intent.getAction();
-        Log.d("Loading","at beginning doesthisworkarray is null: " + (doesthisworkarray == null));
-        Log.d("Loading","at beginning datelongarray is null: " + (datelongarray == null));
 
         if (action.equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
             // refresh all your widgets
@@ -167,7 +131,7 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
                 doesthiswork = getFromIntent;
             }
             if (getArrayFromIntent != null && getLongFromIntent != null) {
-                doesthisworkarray = getArrayFromIntent;
+                eventArray = getArrayFromIntent;
                 datelongarray = getLongFromIntent;
             } else {
                 SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
@@ -197,14 +161,11 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
                     testLongArray[i] = testLongList.get(i);
                 }
 
-                doesthisworkarray = testStringArray;
+                eventArray = testStringArray;
                 datelongarray = testLongArray;
-                Log.d("Loading", "event list UNserialized");
             }
             mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.listview);
         }
-        Log.d("Loading","doesthisworkarray is null: " + (doesthisworkarray == null));
-        Log.d("Loading","datelongarray is null: " + (datelongarray == null));
 
         super.onReceive(context, intent);
     }
@@ -216,13 +177,13 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
 
         Intent intent = new Intent(context, CountdownTrackerWidget.class);
         intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        intent.putExtra("scheduledUpdate","yes");
+        intent.putExtra("Loading","Scheduled update!");
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         int millisInDay = 86400000;
-        Calendar now = Calendar.getInstance();
-        Date dateNow = now.getTime();
+        //Calendar now = Calendar.getInstance();
+        //Date dateNow = now.getTime();
 
         // Get a calendar instance for midnight tomorrow.
         Calendar midnight = Calendar.getInstance();
@@ -240,9 +201,9 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, midnight.getTimeInMillis(),millisInDay, pendingIntent);
         } else {
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, dateNow.getTime() + 60000, pendingIntent);
-            //alarmManager.setExact(AlarmManager.RTC_WAKEUP, midnight.getTimeInMillis(), pendingIntent);
+            // commented out version updates every minute
+            //alarmManager.setExact(AlarmManager.RTC_WAKEUP, dateNow.getTime() + 60000, pendingIntent);
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, midnight.getTimeInMillis(), pendingIntent);
         }
-        Log.d("Loading", "next widget update scheduled");
     }
 }

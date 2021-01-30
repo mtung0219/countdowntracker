@@ -1,5 +1,6 @@
 package com.qi.daysleftcountdown;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
@@ -26,7 +27,6 @@ import java.util.List;
  */
 public class PastEventsActivity extends AppCompatActivity {
 
-    private RecyclerView mRecyclerView;
     private WordListAdapter mAdapter;
     private EventViewModel mEventViewModel;
 
@@ -35,7 +35,7 @@ public class PastEventsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_past_events);
 
-        mRecyclerView = findViewById(R.id.recyclerview_past);
+        RecyclerView mRecyclerView = findViewById(R.id.recyclerview_past);
         mAdapter = new WordListAdapter(this,"past");
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -54,14 +54,14 @@ public class PastEventsActivity extends AppCompatActivity {
                 new ItemTouchHelper.SimpleCallback(0,
                         ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
                     @Override
-                    public boolean onMove(RecyclerView recyclerView,
-                                          RecyclerView.ViewHolder viewHolder,
-                                          RecyclerView.ViewHolder target) {
+                    public boolean onMove(@NonNull RecyclerView recyclerView,
+                                          @NonNull RecyclerView.ViewHolder viewHolder,
+                                          @NonNull RecyclerView.ViewHolder target) {
                         return false;
                     }
 
                     @Override
-                    public void onSwiped(RecyclerView.ViewHolder viewHolder,
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder,
                                          int direction) {
 
                         new AlertDialog.Builder(PastEventsActivity.this)

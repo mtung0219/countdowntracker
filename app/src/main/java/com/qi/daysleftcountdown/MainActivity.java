@@ -1,5 +1,6 @@
 package com.qi.daysleftcountdown;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -46,37 +47,29 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int ADD_EVENT_REQUEST = 1;
     public static final int SETTINGS_REQUEST = 2;
-    private RecyclerView mRecyclerView;
     private WordListAdapter mAdapter;
     private EventViewModel mEventViewModel;
     private List<Event> finalEvents;
-    private Context ctx;
 
     private NotificationManager mNotificationManager;
     private AlarmManager alarmManager;
-    private static final int NOTIFICATION_ID = 0;
     private static final String PRIMARY_CHANNEL_ID =
             "primary_notification_channel";
 
     private static final String PREFERENCE_LAST_NOTIF_ID = "PREFERENCE_LAST_NOTIF_ID";
     private static final String SHARED_PREFS_FILE = "SHARED_PREFS_FILE";
 
-    private SharedPreferences sp;
     private long mLastClickTime = 0;
-
-    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        sp = PreferenceManager.getDefaultSharedPreferences(this);
-        int currentDisplay  = sp.getInt(SettingsActivity.PREFERENCE_DISPLAY_CODE,0);
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        //int currentDisplay  = sp.getInt(SettingsActivity.PREFERENCE_DISPLAY_CODE,0);
         int currentColor  = sp.getInt(SettingsActivity.PREFERENCE_COLOR_CODE,0);
         super.onCreate(savedInstanceState);
         if (currentColor == 0) {
-            Log.d("ASDF","NIGHT MODE NO");
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         } else {
-            Log.d("ASDF","NIGHT MODE YES");
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
         setContentView(R.layout.activity_main);
@@ -87,15 +80,13 @@ public class MainActivity extends AppCompatActivity {
             public void onInitializationComplete(InitializationStatus initializationStatus) {
             }
         });
-        mAdView = findViewById(R.id.adView);
+        AdView mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
-
-        ctx = this;
         mEventViewModel = ViewModelProviders.of(this).get(EventViewModel.class);
 
-        mRecyclerView = findViewById(R.id.recyclerview);
+        RecyclerView mRecyclerView = findViewById(R.id.recyclerview);
         mAdapter = new WordListAdapter(this, "current");
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -116,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
                 String jsonText = gson.toJson(finalEvents);
                 editor.putString("eventList", jsonText);
                 editor.apply();
-                Log.d("Loading", "event list set via gson");
 
                 /*try {
                     FileOutputStream fileOutputStream = new FileOutputStream("Events.ser");
@@ -139,14 +129,14 @@ public class MainActivity extends AppCompatActivity {
                 new ItemTouchHelper.SimpleCallback(0,
                         ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
                     @Override
-                    public boolean onMove(RecyclerView recyclerView,
-                                          RecyclerView.ViewHolder viewHolder,
-                                          RecyclerView.ViewHolder target) {
+                    public boolean onMove(@NonNull RecyclerView recyclerView,
+                                          @NonNull RecyclerView.ViewHolder viewHolder,
+                                          @NonNull RecyclerView.ViewHolder target) {
                         return false;
                     }
 
                     @Override
-                    public void onSwiped(RecyclerView.ViewHolder viewHolder,
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder,
                                          int direction) {
 
                         new AlertDialog.Builder(MainActivity.this)
@@ -217,7 +207,6 @@ public class MainActivity extends AppCompatActivity {
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         notifyIntent.setAction(xId+"");
         notifyIntent.putExtra("type",notificationType);
-        Log.d("asdf","adding this extra name : " + eventName + " with notif ID " + xId);
         final PendingIntent notifyPendingIntent = PendingIntent.getBroadcast
                 (this, xId, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -243,12 +232,11 @@ public class MainActivity extends AppCompatActivity {
      * Sends a broadcast to refresh the widget. Data sent via intent extras.
      */
     public void sendRefreshBroadcast(Context context) {
-        Log.d("Loading","sending an updated broadcast...............");
-        String[] testStringArray = new String[finalEvents.size()];
-        long[] testLongArray = new long[finalEvents.size()];
+        String[] eventNames = new String[finalEvents.size()];
+        long[] eventDates = new long[finalEvents.size()];
         for (int i = 0; i < finalEvents.size(); i++) {
-            testStringArray[i]=(finalEvents.get(i).getName());
-            testLongArray[i] = (finalEvents.get(i).getDateLong());
+            eventNames[i]=(finalEvents.get(i).getName());
+            eventDates[i] = (finalEvents.get(i).getDateLong());
         }
         String teststring = "";
         if (finalEvents.size() > 0) {
@@ -260,31 +248,9 @@ public class MainActivity extends AppCompatActivity {
         intent.setComponent(new ComponentName(context, CountdownTrackerWidget.class));
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         intent.putExtra("doesthiswork",teststring);
-        intent.putExtra("doesthisworkarray",testStringArray);
-        intent.putExtra("dateLongArray",testLongArray);
+        intent.putExtra("doesthisworkarray",eventNames);
+        intent.putExtra("dateLongArray",eventDates);
         context.sendBroadcast(intent);
-    }
-
-    /**
-     * Sets a specific date for testing purposes.
-     */
-    private long getTestLocalDateLong() {
-        Calendar c = Calendar.getInstance();
-        Date prelimDate = c.getTime();
-
-        c.setTime(prelimDate);
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-
-        c.set(Calendar.YEAR, year);
-        c.set(Calendar.MONTH, month);
-        c.set(Calendar.DAY_OF_MONTH, day);
-        c.set(Calendar.HOUR_OF_DAY,2);
-        c.set(Calendar.MINUTE, 7);
-        c.set(Calendar.SECOND, 0);
-        c.set(Calendar.MILLISECOND, 0);
-        return c.getTime().getTime();
     }
 
     /**
@@ -299,14 +265,12 @@ public class MainActivity extends AppCompatActivity {
             int reply_year= data.getIntExtra(AddEventActivity.YEAR_KEY,0);
             int reply_month= data.getIntExtra(AddEventActivity.MONTH_KEY,0);
             int reply_day= data.getIntExtra(AddEventActivity.DAY_KEY,0);
-            Log.d("ASDF","original reply ints are " + reply_year + " " + reply_month + " " + reply_day);
             Date date = getDate(reply_year, reply_month, reply_day);
             int xId = getNextNotifId(this);
             int xId2;
             if (xId == Integer.MAX_VALUE) { xId2 = 0; } else {xId2 = xId + 1; }
 
             Event event = new Event(reply_event_name, date,xId);
-            Log.d("ASDF","original saved date is " + date.getTime());
             mEventViewModel.insert(event);
 
             int daysLeft = event.getDaysLeft();
@@ -358,21 +322,20 @@ public class MainActivity extends AppCompatActivity {
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         // Notification channels are only available in OREO and higher.
-        // So, add a check on SDK version.
         if (android.os.Build.VERSION.SDK_INT >=
                 android.os.Build.VERSION_CODES.O) {
 
             // Create the NotificationChannel with all the parameters.
             NotificationChannel notificationChannel = new NotificationChannel
                     (PRIMARY_CHANNEL_ID,
-                            "Stand up notification",
+                            "Countdown notification",
                             NotificationManager.IMPORTANCE_HIGH);
 
             notificationChannel.enableLights(true);
             notificationChannel.setLightColor(Color.RED);
             notificationChannel.enableVibration(true);
             notificationChannel.setDescription
-                    ("Notifies every 15 minutes to stand up and walk");
+                    ("Notifies when an event is coming up");
             mNotificationManager.createNotificationChannel(notificationChannel);
         }
     }
@@ -420,7 +383,6 @@ public class MainActivity extends AppCompatActivity {
         cal.set(Calendar.SECOND,0);
         cal.set(Calendar.MILLISECOND,0);
 
-        Log.d("ASDF","time set is " + cal.getTime().getTime());
         return cal.getTime();
     }
 
@@ -465,11 +427,6 @@ public class MainActivity extends AppCompatActivity {
      */
     public void countUp(View view) {
         Intent intent = new Intent(this, AddEventActivity.class);
-        //String message = mMessageEditText.getText().toString();
-        //intent.putExtra(EXTRA_MESSAGE, message);
         startActivityForResult(intent, ADD_EVENT_REQUEST);
-
-        //Intent intent2 = new Intent(this, RoomWordsSample.class);
-        //startActivity(intent2);
     }
 }

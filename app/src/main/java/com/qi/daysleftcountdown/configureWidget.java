@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.RemoteViews;
 
 import com.google.gson.Gson;
 
@@ -31,7 +30,6 @@ public class configureWidget extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Context ctx = this;
         EventViewModel mEventViewModel = ViewModelProviders.of(this).get(EventViewModel.class);
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
@@ -41,9 +39,6 @@ public class configureWidget extends AppCompatActivity {
                     AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
 
             if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) { finish(); }
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(ctx);
-            RemoteViews views = new RemoteViews(ctx.getPackageName(),
-                    R.layout.countdown_tracker_widget);
 
             mEventViewModel.getCurrentEvents().observe(this, new Observer<List<Event>>() {
                 @Override
@@ -58,7 +53,6 @@ public class configureWidget extends AppCompatActivity {
                     String jsonText = gson.toJson(finalEvents);
                     editor.putString("eventList", jsonText);
                     editor.apply();
-                    Log.d("Loading", "event list set via gson");
 
                     Context ctx = getApplicationContext();
                     sendRefreshBroadcast(ctx);
@@ -73,12 +67,11 @@ public class configureWidget extends AppCompatActivity {
     }
 
     public void sendRefreshBroadcast(Context context) {
-        Log.d("Loading","sending configure broadcast...............");
-        String[] testStringArray = new String[finalEvents.size()];
-        long[] testLongArray = new long[finalEvents.size()];
+        String[] eventArray = new String[finalEvents.size()];
+        long[] dateArray = new long[finalEvents.size()];
         for (int i = 0; i < finalEvents.size(); i++) {
-            testStringArray[i]=(finalEvents.get(i).getName());
-            testLongArray[i] = (finalEvents.get(i).getDateLong());
+            eventArray[i]=(finalEvents.get(i).getName());
+            dateArray[i] = (finalEvents.get(i).getDateLong());
         }
         String teststring = finalEvents.get(0).getName();
 
@@ -88,8 +81,8 @@ public class configureWidget extends AppCompatActivity {
         intent.setComponent(new ComponentName(context, CountdownTrackerWidget.class));
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         intent.putExtra("doesthiswork",teststring);
-        intent.putExtra("doesthisworkarray",testStringArray);
-        intent.putExtra("dateLongArray",testLongArray);
+        intent.putExtra("doesthisworkarray",eventArray);
+        intent.putExtra("dateLongArray",dateArray);
         context.sendBroadcast(intent);
     }
 }

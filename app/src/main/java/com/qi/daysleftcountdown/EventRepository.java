@@ -70,8 +70,6 @@ public class EventRepository {private EventDao mEventDao;
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MILLISECOND, 0);
 
-        Log.d("asdf",c.getTime().getTime()+"");
-
         return c.getTime().getTime();
     }
 
