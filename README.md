@@ -9,7 +9,10 @@ A widget is available to place on the home screen, and is automatically updated 
 
 Time can be viewed as pure days (for example "1353 days left"), or in year/month/day format ("3y 5mo 12d"). Day/night modes are available within the app.
 
+# Example screenshots are below:
+
+![alt text](https://github.com/mtung0219/countdowntracker/blob/master/phone_screenshot_2_9by16.jpeg?raw=true)
 
 ![alt text](https://github.com/mtung0219/countdowntracker/blob/master/zScreenshot_20210129-141318_One%20UI%20Home.jpg?raw=true)
 
-![alt text](https://github.com/mtung0219/countdowntracker/blob/master/phone_screenshot_2_9by16.jpeg?raw=true)
+
