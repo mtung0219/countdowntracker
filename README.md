@@ -8,3 +8,8 @@ Event history is stored in a separate view, and events can be deleted at any tim
 A widget is available to place on the home screen, and is automatically updated any time a change is made (an event is added or removed), and at midnight system-time each day.
 
 Time can be viewed as pure days (for example "1353 days left"), or in year/month/day format ("3y 5mo 12d"). Day/night modes are available within the app.
+
+
+![alt text](https://github.com/mtung0219/countdowntracker/blob/master/zScreenshot_20210129-141318_One%20UI%20Home.jpg?raw=true)
+
+![alt text](https://github.com/mtung0219/countdowntracker/blob/master/phone_screenshot_2_9by16.jpeg?raw=true)
