@@ -1,6 +1,6 @@
-# countdowntracker
+# Countdown Tracker App
 
-Complete code for the Android app, "Days Left Countdown - App and Widget". This app allows users to keep track of their upcoming events in a simple, minimalist format.
+This is the complete code for the Android app, "Days Left Countdown - App and Widget" (currently in internal testing, awaiting Google approval). This app allows users to keep track of their upcoming events in a simple, minimalist format.
 Users provide an event name and date, and that event is added onto a running list. This data is stored locally via Android's Room SQLite database service.
 
 Event history is stored in a separate view, and events can be deleted at any time.
