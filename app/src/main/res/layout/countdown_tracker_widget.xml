@@ -5,7 +5,7 @@
     android:padding="@dimen/widget_margin"
     android:clickable="true"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/main_300"
+    android:background="@color/main_200"
     android:focusable="true">
 
     <TextView

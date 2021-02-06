@@ -8,12 +8,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/app_background_round"
         android:supportsRtl="true"
-        android:versionName="1.0"
+        android:versionName="3.0"
         android:theme="@style/Theme.HelloWorld">
 
 
         <activity android:name="com.qi.daysleftcountdown.SettingsActivity" />
         <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
+        <!-- my real adMob ID: ca-app-pub-7375735618137860~7760221706 -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713" />

@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -177,13 +178,13 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
 
         Intent intent = new Intent(context, CountdownTrackerWidget.class);
         intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        intent.putExtra("Loading","Scheduled update!");
+        intent.putExtra("scheduledUpdate","yes");
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         int millisInDay = 86400000;
-        //Calendar now = Calendar.getInstance();
-        //Date dateNow = now.getTime();
+        Calendar now = Calendar.getInstance();
+        Date dateNow = now.getTime();
 
         // Get a calendar instance for midnight tomorrow.
         Calendar midnight = Calendar.getInstance();
@@ -192,7 +193,7 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
         // Schedule one second after midnight, to be sure we are in the right day next time this
         // method is called.  Otherwise, we risk calling onUpdate multiple times within a few
         // milliseconds
-        midnight.set(Calendar.SECOND, 1);
+        midnight.set(Calendar.SECOND, 2);
         midnight.set(Calendar.MILLISECOND, 0);
         midnight.add(Calendar.DAY_OF_YEAR, 1);
 
@@ -200,6 +201,7 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
         // setExact ensures the intent goes off exactly at midnight.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, midnight.getTimeInMillis(),millisInDay, pendingIntent);
+            //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, midnight.getTimeInMillis(),60000, pendingIntent);
         } else {
             // commented out version updates every minute
             //alarmManager.setExact(AlarmManager.RTC_WAKEUP, dateNow.getTime() + 60000, pendingIntent);
