@@ -31,6 +31,8 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
     Random r = new Random();
     int random = r.nextInt(999999);
     private static final String SHARED_PREFS_FILE = "SHARED_PREFS_FILE";
+    private static final String LAST_UPDATED_COUNTDOWN_TRACKER = "LAST_UPDATED_COUNTDOWN_TRACKER";
+    public static int UPDATE_MIN = 1;
 
 
     void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
@@ -95,6 +97,7 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
 
     @Override
     public void onEnabled(Context context) {
+        //Log.d("widget", "WIDGET ENABLED");
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("first_sched_run3", true);
@@ -112,14 +115,29 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
     public void onReceive(final Context context, Intent intent) {
         final String action = intent.getAction();
 
+        //Log.d("widget", "widget receiving request");
+
         if (action.equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
             // refresh all your widgets
+            Calendar now = Calendar.getInstance();
+            Date dateNow = now.getTime();
+            SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
+
+            long lastUpdated = prefs.getLong(LAST_UPDATED_COUNTDOWN_TRACKER,0);
+            boolean update_stale = false;
+
+            //Log.d("widget","last updated is ");
+            //Log.d("widget", String.valueOf(lastUpdated));
+
+            if ((dateNow.getTime() - lastUpdated) > (60000*UPDATE_MIN+1000))
+                update_stale = true;
 
             AppWidgetManager mgr = AppWidgetManager.getInstance(context);
             ComponentName cn = new ComponentName(context, CountdownTrackerWidget.class);
 
-            if (intent.getStringExtra("scheduledUpdate") != null &&
-                    intent.getStringExtra("scheduledUpdate").equals("yes")) {
+
+            if (((intent.getStringExtra("scheduledUpdate") != null &&
+                    intent.getStringExtra("scheduledUpdate").equals("yes"))) || update_stale) {
 
                 int[] appWidgetIds = mgr.getAppWidgetIds(cn);
                 scheduleNextUpdate(context, appWidgetIds);
@@ -131,11 +149,11 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
             if (getFromIntent != null) {
                 doesthiswork = getFromIntent;
             }
+
             if (getArrayFromIntent != null && getLongFromIntent != null) {
                 eventArray = getArrayFromIntent;
                 datelongarray = getLongFromIntent;
             } else {
-                SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
                 Gson gson = new Gson();
                 String jsonText = prefs.getString("eventList", null);
                 Event[] text = gson.fromJson(jsonText, Event[].class);
@@ -153,6 +171,8 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
                     }
                 }
 
+                prefs.edit().putLong(LAST_UPDATED_COUNTDOWN_TRACKER, dateNow.getTime()).apply();
+
                 // converting from arraylist to array (for parcelable purposes)
                 String[] testStringArray = new String[testLongList.size()];
                 long[] testLongArray = new long[testLongList.size()];
@@ -165,6 +185,8 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
                 eventArray = testStringArray;
                 datelongarray = testLongArray;
             }
+
+
             mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.listview);
         }
 
@@ -200,12 +222,13 @@ public class CountdownTrackerWidget extends AppWidgetProvider {
         // For API 19 and later, set may fire the intent a little later to save battery,
         // setExact ensures the intent goes off exactly at midnight.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, midnight.getTimeInMillis(),millisInDay, pendingIntent);
-            //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, midnight.getTimeInMillis(),60000, pendingIntent);
+            //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, midnight.getTimeInMillis(),millisInDay, pendingIntent);
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, midnight.getTimeInMillis(),60000*UPDATE_MIN, pendingIntent);
         } else {
             // commented out version updates every minute
-            //alarmManager.setExact(AlarmManager.RTC_WAKEUP, dateNow.getTime() + 60000, pendingIntent);
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, midnight.getTimeInMillis(), pendingIntent);
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, dateNow.getTime() + 60000*UPDATE_MIN, pendingIntent);
+            //alarmManager.setExact(AlarmManager.RTC_WAKEUP, midnight.getTimeInMillis(), pendingIntent);
+            //Log.d("widget", "alarm set for  " + (dateNow.getTime() + 60000*UPDATE_MIN));
         }
     }
 }

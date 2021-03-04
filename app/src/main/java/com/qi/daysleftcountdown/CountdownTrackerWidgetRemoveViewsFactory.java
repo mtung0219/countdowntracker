@@ -55,6 +55,8 @@ public class CountdownTrackerWidgetRemoveViewsFactory implements RemoteViewsServ
     @Override
     public RemoteViews getViewAt(int position) {
 
+        //Log.d("widget", "updating widget view");
+
         RemoteViews remoteView = new RemoteViews(mContext.getPackageName(),
                 R.layout.listview_item);
 

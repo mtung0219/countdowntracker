@@ -73,7 +73,11 @@ public class configureWidget extends AppCompatActivity {
             eventArray[i]=(finalEvents.get(i).getName());
             dateArray[i] = (finalEvents.get(i).getDateLong());
         }
-        String teststring = finalEvents.get(0).getName();
+        String teststring;
+        if (finalEvents.size() == 0)
+            teststring = "";
+        else
+            teststring = finalEvents.get(0).getName();
 
         int[] ids = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(context, CountdownTrackerWidget.class));
 
